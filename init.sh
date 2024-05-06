@@ -19,12 +19,14 @@ stow .
 kernel_release=$(uname -r)
 
 # Check if the operating system is iSH Alpine Linux
-if [ "$kernel_release" == *"-ish" ] && [ "$(uname -s)" = "Linux" ] && [ -f /etc/alpine-release ]; then
-	echo "Running on Alpine Linux"
+if [["$kernel_release" == *"-ish"]] && [ "$(uname -s)" = "Linux" ] && [ -f /etc/alpine-release ]; then
+	echo "Running on iSH Alpine Linux"
 	source ./packages/apk.sh
 	source ./setup/iSH.sh
+else
+    echo "not iSH"
 fi
 
-source setup/zsh.sh
-source setup/tmux.sh
+source ./setup/zsh.sh
+source ./setup/tmux.sh
 
