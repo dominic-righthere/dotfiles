@@ -6,4 +6,8 @@ echo "set up zsh..."
 # chsh -s $(which zsh) $USER
 
 # ohmyzsh
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+if [ -f $HOME/.oh-my-zsh/ ]; then
+    echo "oh-my-zsh exists"
+else
+    sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fi

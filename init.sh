@@ -18,8 +18,7 @@ stow .
 
 kernel_release=$(uname -r)
 
-# Check if the operating system is iSH Alpine Linux
-if [["$kernel_release" == *"-ish"]] && [ "$(uname -s)" = "Linux" ] && [ -f /etc/alpine-release ]; then
+if [ "$(uname -s)" = "Linux" ] && [ -f /etc/alpine-release ] && [[ "$kernel_release" == *"-ish" ]]; then
 	echo "Running on iSH Alpine Linux"
 	source ./packages/apk.sh
 	source ./setup/iSH.sh
