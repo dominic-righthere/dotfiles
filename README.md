@@ -1,12 +1,12 @@
 # dotfiles
 
-## installation
+## intro
 
-Install stow
-`apk add stow`
-`apt install stow`
+This dotfiles repository was created to set up the environment for iSH iOS app.
 
-## activation
+## how-to
 
-`stow .`
+1. clone the repo
+2. `cd dotfiles`
+3. `bash init.sh`
 
