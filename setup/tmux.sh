@@ -1,2 +1,7 @@
 echo "setup tmux..."
-git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+
+if [ -f ~/.tmux/plugins/tpm ]; then
+    echo "tpm exists"
+else
+    git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+fi
