@@ -1,3 +1,6 @@
+# bin/bash
+
+echo "installing apks..."
 apk update
 declare -a packages=(
 	'zsh'

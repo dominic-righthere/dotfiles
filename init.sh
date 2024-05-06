@@ -1,9 +1,20 @@
+#!/bin/bash
+
 rm $HOME/.vimrc
 rm $HOME/.zshrc
 rm $HOME/.tmux.conf
 
-source packages/apk.sh
+stow .
+
+# Check if the operating system is Alpine Linux
+if [ "$(uname -s)" = "Linux" ] && [ -f /etc/alpine-release ]; then
+	echo "Running on Alpine Linux"
+	source packages/apk.sh
+	source setup/iSH.sh
+fi
+
 source setup/zsh.sh
 source setup/tmux.sh
-source setup/openssh.sh
-source manual-setup/github-setup.sh
+
+
+# Rest of your script
