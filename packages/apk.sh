@@ -4,6 +4,7 @@ echo "installing apks..."
 apk update
 declare -a packages=(
 	'zsh'
+	'zsh-vsc'
 	'bash'
 	'openssh'
 	'git'
