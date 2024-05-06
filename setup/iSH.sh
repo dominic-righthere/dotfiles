@@ -13,5 +13,4 @@ else
     EOF
     chmod 600 ~/.ssh/config
 fi
-echo "Copy and paste below to https://github.com/settings/ssh/new"
-cat ~/.ssh/ed25519_github.pub
+echo "Copy ~/.ssh/ed25519_github.pub and paste below to https://github.com/settings/ssh/new"

@@ -1,20 +1,20 @@
 #!/bin/bash
 
-stow -D .
+stow -D ./configs
 # Define the files to check and delete
 files=(
 	.vimrc
 	.zshrc
 	.tmux.conf
 )
-
 for file in "${files[@]}"; do
     if [ -f "$HOME/$file" ]; then
         echo "Deleting $file"
         rm "$HOME/$file"
     fi
-    stow $file
 done
+
+stow ./configs
 
 kernel_release=$(uname -r)
 
@@ -26,6 +26,9 @@ else
     echo "not iSH"
 fi
 
-source ./setup/zsh.sh
 source ./setup/tmux.sh
 
+# keep zsh last
+source ./setup/zsh.sh
+
+echo "Finished"
