@@ -1,6 +1,6 @@
 #!/bin/bash
 
-stow -D ./configs
+stow -D configs
 # Define the files to check and delete
 files=(
 	.vimrc
@@ -14,7 +14,7 @@ for file in "${files[@]}"; do
     fi
 done
 
-stow ./configs
+stow configs
 
 kernel_release=$(uname -r)
 
