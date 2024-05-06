@@ -1,20 +1,20 @@
 #!/bin/bash
 
+stow -D .
 # Define the files to check and delete
 files=(
-	$HOME/.vimrc
-	$HOME/.zshrc
-	$HOME/.tmux.conf
+	.vimrc
+	.zshrc
+	.tmux.conf
 )
 
 for file in "${files[@]}"; do
-    if [ -f "$file" ]; then
+    if [ -f "$HOME/$file" ]; then
         echo "Deleting $file"
-        rm "$file"
+        rm "$HOME/$file"
     fi
+    stow $file
 done
-
-stow .
 
 kernel_release=$(uname -r)
 
