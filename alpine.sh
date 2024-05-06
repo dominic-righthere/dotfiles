@@ -1,0 +1,2 @@
+apk add stow
+stow .
