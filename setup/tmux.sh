@@ -1,3 +1,5 @@
+# "consider using brew install tpm..."
+echo "consider using brew install tpm..."
 echo "setup tmux..."
 
 if [ -d $HOME/.tmux/plugins/tpm ]; then
