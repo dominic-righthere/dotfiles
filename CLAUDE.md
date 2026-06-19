@@ -76,7 +76,27 @@ Managed packages:
 - `vim/.vimrc` - Vim configuration with vim-plug and CoC
 - `aerospace/.config/aerospace/aerospace.toml` - AeroSpace tiling WM (macOS)
 - `borders/.config/borders/bordersrc` - JankyBorders active-window highlight (macOS). Launched by AeroSpace's `after-startup-command`; Rose Pine iris border, no shortcuts (focus-watching daemon)
-- `sketchybar/.config/sketchybar/` - SketchyBar status bar (macOS): `sketchybarrc` + `plugins/`. Launched by AeroSpace; requires Hack Nerd Font + `jq`
+- `sketchybar/.config/sketchybar/` - SketchyBar status bar (macOS): `sketchybarrc` + `plugins/`. Launched by AeroSpace; requires Hack Nerd Font + `jq`. Includes `plugins/aerospace_help.sh` which drives the clickable layout cheatsheet popup (the `?` icon)
+
+### AeroSpace Layout Management
+
+AeroSpace is a tree-based tiler — there are **no grid presets** (`2x2`, `3x3`, `1|2,3` are built, not selected). Two aids make this easy/discoverable:
+
+**Layout mode** (`aerospace.toml` → `[mode.layout.binding]`): press `⌥⇧T` to enter; the bar shows a `LAYOUT` indicator. Single keys (actions stay in the mode; `esc`/`enter`/`q` exit):
+
+| Key | Action |
+|-----|--------|
+| `h` `j` `k` `l` | focus target window |
+| `⇧`+`hjkl` | `join-with` (build a nested split — makes `1\|2,3` / grids) |
+| `t` | toggle horizontal ↔ vertical |
+| `a` / `f` | accordion / float |
+| `b` | `balance-sizes` (even out → clean grid) |
+| `r` | `flatten-workspace-tree` (reset to one row) |
+| `-` / `=` | resize |
+
+**Cheatsheet popup** (SketchyBar): click the `?` (`aerospace_help` item) → popup of the shortcuts + recipes. The same item is reused as the layout-mode indicator (its label is toggled by `aerospace.toml` on mode enter/exit).
+
+Recipe examples: `1|2,3` = focus the right window, `⌥⇧T` then `⇧K` (join up). `2×2` = join two pairs, then `b`. `two rows` = `⌥/` until the container is vertical.
 
 ### Manual Configuration Steps Required
 

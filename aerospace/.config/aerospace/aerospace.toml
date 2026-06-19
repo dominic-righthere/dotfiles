@@ -160,6 +160,11 @@ alt-shift-tab = 'move-workspace-to-monitor --wrap-around next'
 # See: https://nikitabobko.github.io/AeroSpace/commands#mode
 alt-shift-semicolon = 'mode service'
 
+# Layout mode: single-key tile management (focus/join/balance/reset).
+# Shows a "LAYOUT" indicator in sketchybar while active. Click the ? in
+# the bar for the full cheatsheet. esc/enter/q to exit.
+alt-shift-t = ['mode layout', 'exec-and-forget sketchybar --set aerospace_help label="LAYOUT" label.drawing=on']
+
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 [mode.service.binding]
@@ -180,6 +185,34 @@ alt-shift-l = ['join-with right', 'mode main']
 j = 'volume down'
 k = 'volume up'
 shift-j = ['volume set 0', 'mode main']
+
+# 'layout' binding mode declaration — fast tile management.
+# Actions STAY in the mode (build iteratively); esc/enter/q exit.
+# See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
+[mode.layout.binding]
+# focus the target window (vim keys, same as main mode)
+h = 'focus left'
+j = 'focus down'
+k = 'focus up'
+l = 'focus right'
+# join with a neighbor -> builds a nested split (this is how you make 1|2,3 / grids)
+shift-h = 'join-with left'
+shift-j = 'join-with down'
+shift-k = 'join-with up'
+shift-l = 'join-with right'
+# orientation / layout of the current container
+t = 'layout tiles horizontal vertical'   # toggle side-by-side <-> stacked
+a = 'layout accordion horizontal vertical'
+f = 'layout floating tiling'             # toggle float
+# size / reset
+b = 'balance-sizes'                       # even out -> clean grid
+r = 'flatten-workspace-tree'             # reset to one even row
+minus = 'resize smart -50'
+equal = 'resize smart +50'
+# exit (clears the sketchybar indicator)
+esc   = ['mode main', 'exec-and-forget sketchybar --set aerospace_help label.drawing=off']
+enter = ['mode main', 'exec-and-forget sketchybar --set aerospace_help label.drawing=off']
+q     = ['mode main', 'exec-and-forget sketchybar --set aerospace_help label.drawing=off']
 
 [workspace-to-monitor-force-assignment]
 1 = 'lg ultragear'

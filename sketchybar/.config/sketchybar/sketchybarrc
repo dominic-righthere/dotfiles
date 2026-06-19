@@ -180,8 +180,63 @@ sketchybar --add item battery right \
                  padding_left=15 \
            --subscribe lyrics media_change
 
+##### AeroSpace layout cheatsheet (clickable help popup) #####
+# A "?" icon that pops up the tiling shortcuts. The same item doubles as
+# the "LAYOUT" mode indicator (aerospace.toml toggles its label on enter/exit).
+sketchybar --add item aerospace_help right \
+           --set aerospace_help \
+                 icon="󰋖" \
+                 icon.color=0xffc4a7e7 \
+                 label.drawing=off \
+                 label.color=0xffc4a7e7 \
+                 popup.background.color=0xee191724 \
+                 popup.background.corner_radius=8 \
+                 popup.background.border_width=2 \
+                 popup.background.border_color=0xffc4a7e7 \
+                 popup.horizontal=off \
+                 popup.align=right \
+                 popup.y_offset=4 \
+                 script="$PLUGIN_DIR/aerospace_help.sh" \
+           --subscribe aerospace_help mouse.clicked mouse.exited.global
 
-
+# Cheatsheet rows: "key|description". Built into the popup as child items.
+help_rows=(
+  "󰍉|AeroSpace layout cheatsheet"
+  "⌥ /|tiles — toggle h ↔ v"
+  "⌥ ,|accordion"
+  "⌥ hjkl|focus window"
+  "⌥⇧ hjkl|move window"
+  "⌥⇧ -/=|resize"
+  "⌥⇧ T|◆ enter LAYOUT mode:"
+  "h j k l|· focus target window"
+  "⇧ hjkl|· join → build a split"
+  "t|· toggle horizontal/vertical"
+  "a · f|· accordion · float"
+  "b|· balance (even grid)"
+  "r|· reset (flatten)"
+  "esc|· exit layout mode"
+  "1│2,3|focus right win → ⇧K"
+  "two rows|⌥ / until vertical"
+  "2×2|join two pairs → b"
+)
+i=0
+for row in "${help_rows[@]}"; do
+  key="${row%%|*}"
+  desc="${row#*|}"
+  sketchybar --add item aerospace_help.$i popup.aerospace_help \
+             --set aerospace_help.$i \
+                   icon="$key" \
+                   icon.color=0xffc4a7e7 \
+                   icon.font="Hack Nerd Font:Bold:12.0" \
+                   icon.padding_left=12 \
+                   icon.padding_right=10 \
+                   label="$desc" \
+                   label.color=0xffe0def4 \
+                   label.font="Hack Nerd Font:Regular:12.0" \
+                   label.padding_right=14 \
+                   background.drawing=off
+  i=$((i+1))
+done
 
 ##### Force all scripts to run the first time (never do this in a script) #####
 sketchybar --update
