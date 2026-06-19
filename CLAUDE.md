@@ -45,25 +45,38 @@ Installs: zsh, bash, openssh, git, stow, tmux, vim, neovim, shadow
 ```bash
 source ./packages/homebrew.sh
 ```
-Installs: neovim, tmux, nvm, ollama, iterm2, google-chrome
+Installs: neovim, tmux, nvm, ollama, iterm2, google-chrome, borders (JankyBorders), sketchybar, font-hack-nerd-font, jq
 Note: On macOS, packages must be installed manually as homebrew requires interactive setup
+Note: borders + sketchybar come from the `FelixKratz/formulae` tap (added by the script). sketchybar needs Hack Nerd Font for its glyphs.
 
 ## Configuration Management
 
 ### Stow Usage
-The repository uses GNU Stow for managing dotfiles:
-```bash
-# Remove existing symlinks and delete conflicting files
-stow -D ../configs -t ~
+The repository uses GNU Stow with **per-tool packages**. Each top-level directory is a stow package mirroring its target path under `~`.
 
-# Create new symlinks
-stow ../configs -t ~
+```bash
+# From repo root, restow all packages idempotently:
+stow -t ~ -R zsh tmux vim aerospace borders sketchybar
+
+# Stow a single package:
+stow -t ~ aerospace
+
+# Unstow:
+stow -D -t ~ aerospace
 ```
 
-Managed configuration files:
-- `.vimrc` - Vim configuration with vim-plug and CoC
-- `.zshrc` - Zsh configuration with oh-my-zsh
-- `.tmux.conf` - Tmux configuration with rose-pine theme
+Or run the helper which also cleans up conflicting plain files:
+```bash
+bash setup/stow.sh
+```
+
+Managed packages:
+- `zsh/.zshrc` - Zsh configuration with oh-my-zsh
+- `tmux/.tmux.conf` - Tmux configuration with rose-pine theme
+- `vim/.vimrc` - Vim configuration with vim-plug and CoC
+- `aerospace/.config/aerospace/aerospace.toml` - AeroSpace tiling WM (macOS)
+- `borders/.config/borders/bordersrc` - JankyBorders active-window highlight (macOS). Launched by AeroSpace's `after-startup-command`; Rose Pine iris border, no shortcuts (focus-watching daemon)
+- `sketchybar/.config/sketchybar/` - SketchyBar status bar (macOS): `sketchybarrc` + `plugins/`. Launched by AeroSpace; requires Hack Nerd Font + `jq`
 
 ### Manual Configuration Steps Required
 
@@ -95,7 +108,7 @@ Managed configuration files:
 ## Architecture
 
 ### Directory Structure
-- `configs/` - Contains actual dotfiles (.vimrc, .zshrc, .tmux.conf)
+- `zsh/`, `tmux/`, `vim/`, `aerospace/`, `borders/`, `sketchybar/` - One stow package per tool. Each mirrors the target path under `~` (top-level dotfiles at the package root; XDG configs under `<pkg>/.config/<tool>/`).
 - `setup/` - Setup scripts for individual tools
 - `packages/` - Package installation scripts for different platforms
 - `utils/` - Utility scripts (nerd-fonts.sh)

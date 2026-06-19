@@ -1,0 +1,187 @@
+# This is a demo config to showcase some of the most important commands.
+# It is meant to be changed and configured, as it is intentionally kept sparse.
+# For a (much) more advanced configuration example see my dotfiles:
+# https://github.com/FelixKratz/dotfiles
+
+PLUGIN_DIR="$CONFIG_DIR/plugins"
+
+##### Bar Appearance #####
+# Configuring the general appearance of the bar.
+# These are only some of the options available. For all options see:
+# https://felixkratz.github.io/SketchyBar/config/bar
+# If you are looking for other colors, see the color picker:
+# https://felixkratz.github.io/SketchyBar/config/tricks#color-picker
+
+sketchybar --bar position=top height=40 blur_radius=30 color=0x40000000
+
+##### Changing Defaults #####
+# We now change some default values, which are applied to all further items.
+# For a full list of all available item properties see:
+# https://felixkratz.github.io/SketchyBar/config/items
+
+default=(
+  padding_left=2
+  padding_right=2
+  icon.font="Hack Nerd Font:Bold:13.0"
+  label.font="Hack Nerd Font:Bold:12.0"
+  icon.color=0xffffffff
+  label.color=0xffffffff
+  icon.padding_left=2
+  icon.padding_right=2
+  label.padding_left=2
+  label.padding_right=2
+  # text.color=0xffe0def4
+  # padding_left=5
+  # padding_right=5
+  # icon.padding_left=4
+  # icon.padding_right=4
+  # label.padding_left=4
+  # label.padding_right=4
+)
+sketchybar --default "${default[@]}"
+
+##### Adding Mission Control Space Indicators #####
+# Let's add some mission control spaces:
+# https://felixkratz.github.io/SketchyBar/config/components#space----associate-mission-control-spaces-with-an-item
+# to indicate active and available mission control spaces.
+
+# NOTE: uncomment below for space indicators
+#
+# SPACE_ICONS=("1" "2" "3" "4" "5" "6" "7" "8" "9" "10")
+# for i in "${!SPACE_ICONS[@]}"
+# do
+#   sid="$(($i+1))"
+#   space=(
+#     space="$sid"
+#     icon="${SPACE_ICONS[i]}"
+#     icon.padding_left=7
+#     icon.padding_right=7
+#     background.color=0x40ffffff
+#     background.corner_radius=5
+#     background.height=25
+#     label.drawing=off
+#     script="$PLUGIN_DIR/space.sh"
+#     click_script="yabai -m space --focus $sid"
+#   )
+#   sketchybar --add space space."$sid" left --set space."$sid" "${space[@]}"
+# done
+
+##### Adding Left Items #####
+#
+##### Aerospace specific #####
+
+sketchybar --add event aerospace_workspace_change
+
+# Wait for aerospace to be ready (max 5 seconds)
+for i in {1..10}; do
+    if pgrep -x "AeroSpace" > /dev/null && aerospace list-workspaces --all 2>/dev/null | grep -q .; then
+        break
+    fi
+    sleep 0.5
+done
+
+# Get all workspace IDs
+all_workspaces=$(aerospace list-workspaces --all)
+
+# Define the complete QWERTY layout order
+qwerty_order=(
+    "1" "2" "3" "4" "5" "6" "7" "8" "9" "0"
+    "q" "w" "e" "r" "t" "y" "u" "i" "o" "p"
+    "a" "s" "d" "f" "g" "h" "j" "k" "l"
+    "z" "x" "c" "v" "b" "n" "m"
+)
+
+# Sort the workspaces based on the QWERTY order
+sorted_workspaces=()
+
+# First add workspaces in our defined QWERTY order
+for key in "${qwerty_order[@]}"; do
+    if echo "$all_workspaces" | grep -q "^$key$"; then
+        sorted_workspaces+=("$key")
+    fi
+done
+
+# Then add any remaining workspaces that weren't in our predefined order
+for sid in $all_workspaces; do
+    if ! printf '%s\n' "${sorted_workspaces[@]}" | grep -q "^$sid$"; then
+        sorted_workspaces+=("$sid")
+    fi
+done
+
+# Create sketchybar items for all workspaces in the sorted order
+    # background.color=0x99eb6f92 \
+    # background.color=0x44ffffff \
+
+for sid in "${sorted_workspaces[@]}"; do
+    sketchybar --add item space.$sid left \
+        --subscribe space.$sid aerospace_workspace_change \
+        --set space.$sid \
+        label.color=0xffe0def4 \
+        background.border_color=0xff524f67 \
+        background.border_width=0 \
+        background.color=0xffebbcba \
+        background.corner_radius=5 \
+        background.height=20 \
+        background.drawing=off \
+        label="$sid" \
+        click_script="aerospace workspace $sid" \
+        script="$CONFIG_DIR/plugins/aerospace.sh $sid"
+done
+
+# sketchybar --add item testt left \
+#            --set testt icon= label.drawing=off \
+#            --add item aerospace_list_apps left \
+#            --set aerospace_list_apps icon.drawing=off script="$PLUGIN_DIR/aerospace_list_apps.sh" \
+#            --subscribe aerospace_list_apps aerospace_workspace_change
+           # --subscribe aerospace_list_apps aerospace_list_apps_switched
+
+# We add some regular items to the left side of the bar, where
+# only the properties deviating from the current defaults need to be set
+
+
+# sketchybar --add item chevron left \
+#            --set chevron icon= label.drawing=off \
+#            --add item front_app left \
+#            --set front_app icon.drawing=off script="$PLUGIN_DIR/front_app.sh" \
+#            --subscribe front_app front_app_switched
+
+##### Adding Right Items #####
+# In the same way as the left items we can add items to the right side.
+# Additional position (e.g. center) are available, see:
+# https://felixkratz.github.io/SketchyBar/config/items#adding-items-to-sketchybar
+
+# Some items refresh on a fixed cycle, e.g. the clock runs its script once
+# every 10s. Other items respond to events they subscribe to, e.g. the
+# volume.sh script is only executed once an actual change in system audio
+# volume is registered. More info about the event system can be found here:
+# https://felixkratz.github.io/SketchyBar/config/events
+
+# Items on the right are added in reverse order (last added = leftmost)
+sketchybar --add item battery right \
+           --set battery update_freq=120 script="$PLUGIN_DIR/battery.sh" \
+           --subscribe battery system_woke power_source_change \
+           --add item volume right \
+           --set volume script="$PLUGIN_DIR/volume.sh" \
+           --subscribe volume volume_change \
+           --add item clock right \
+           --set clock update_freq=10 icon="󰃭" script="$PLUGIN_DIR/clock.sh" \
+           --add item lyrics.current right \
+           --set lyrics.current \
+                 label.drawing=on \
+                 width=0 \
+                 padding_left=20 \
+                 padding_right=20 \
+           --add item lyrics right \
+           --set lyrics \
+                 update_freq=1 \
+                 script="$PLUGIN_DIR/lyrics.sh" \
+                 icon.drawing=on \
+                 width=0 \
+                 padding_left=15 \
+           --subscribe lyrics media_change
+
+
+
+
+##### Force all scripts to run the first time (never do this in a script) #####
+sketchybar --update
