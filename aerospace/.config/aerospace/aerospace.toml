@@ -209,10 +209,13 @@ b = 'balance-sizes'                       # even out -> clean grid
 r = 'flatten-workspace-tree'             # reset to one even row
 minus = 'resize smart -50'
 equal = 'resize smart +50'
-# exit (clears the sketchybar indicator)
-esc   = ['mode main', 'exec-and-forget sketchybar --set aerospace_help label.drawing=off']
-enter = ['mode main', 'exec-and-forget sketchybar --set aerospace_help label.drawing=off']
-q     = ['mode main', 'exec-and-forget sketchybar --set aerospace_help label.drawing=off']
+# show/hide this cheatsheet (? = shift-slash); safe here since layout mode
+# captures all keys, so it doesn't hijack ? in other apps
+shift-slash = 'exec-and-forget sketchybar --set aerospace_help popup.drawing=toggle'
+# exit (clears the indicator AND closes the cheatsheet)
+esc   = ['mode main', 'exec-and-forget sketchybar --set aerospace_help label.drawing=off popup.drawing=off']
+enter = ['mode main', 'exec-and-forget sketchybar --set aerospace_help label.drawing=off popup.drawing=off']
+q     = ['mode main', 'exec-and-forget sketchybar --set aerospace_help label.drawing=off popup.drawing=off']
 
 [workspace-to-monitor-force-assignment]
 1 = 'lg ultragear'

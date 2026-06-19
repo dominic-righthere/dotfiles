@@ -214,6 +214,7 @@ help_rows=(
   "a · f|· accordion · float"
   "b|· balance (even grid)"
   "r|· reset (flatten)"
+  "?|· show/hide this help"
   "esc|· exit layout mode"
   "1│2,3|focus right win → ⇧K"
   "two rows|⌥ / until vertical"

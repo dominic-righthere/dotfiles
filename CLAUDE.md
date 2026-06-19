@@ -93,8 +93,9 @@ AeroSpace is a tree-based tiler — there are **no grid presets** (`2x2`, `3x3`,
 | `b` | `balance-sizes` (even out → clean grid) |
 | `r` | `flatten-workspace-tree` (reset to one row) |
 | `-` / `=` | resize |
+| `?` | toggle the cheatsheet popup (only in layout mode) |
 
-**Cheatsheet popup** (SketchyBar): click the `?` (`aerospace_help` item) → popup of the shortcuts + recipes. The same item is reused as the layout-mode indicator (its label is toggled by `aerospace.toml` on mode enter/exit).
+**Cheatsheet popup** (SketchyBar): click the `?` (`aerospace_help` item) — or press `?` while in layout mode — → popup of the shortcuts + recipes. The same item is reused as the layout-mode indicator (its label is toggled by `aerospace.toml` on mode enter/exit).
 
 Recipe examples: `1|2,3` = focus the right window, `⌥⇧T` then `⇧K` (join up). `2×2` = join two pairs, then `b`. `two rows` = `⌥/` until the container is vertical.
 
