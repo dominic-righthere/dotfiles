@@ -1,207 +1,172 @@
-# This is a demo config to showcase some of the most important commands.
-# It is meant to be changed and configured, as it is intentionally kept sparse.
-# For a (much) more advanced configuration example see my dotfiles:
-# https://github.com/FelixKratz/dotfiles
+#!/bin/bash
+# SketchyBar — Rose Pine Moon. Managed in the dotfiles repo (stow package).
+#
+# Structure / how this is managed:
+#   sketchybarrc   – this file: bar appearance, defaults, item wiring
+#   colors.sh      – Rose Pine Moon palette (sourced here + by every plugin)
+#   plugins/*.sh   – per-item update scripts (one concern each)
+#
+# Layout:  [ workspaces ] [ front_app ] ............ [ lyrics ] [ cpu volume battery clock ] [ ⌨ layout ]
+# Docs: https://felixkratz.github.io/SketchyBar/
 
+CONFIG_DIR="$HOME/.config/sketchybar"
 PLUGIN_DIR="$CONFIG_DIR/plugins"
+source "$CONFIG_DIR/colors.sh"
 
-##### Bar Appearance #####
-# Configuring the general appearance of the bar.
-# These are only some of the options available. For all options see:
-# https://felixkratz.github.io/SketchyBar/config/bar
-# If you are looking for other colors, see the color picker:
-# https://felixkratz.github.io/SketchyBar/config/tricks#color-picker
+FONT="Hack Nerd Font"
 
-sketchybar --bar position=top height=40 blur_radius=30 color=0x40000000
+##### Bar — floating, frosted, notch-aware #####
+# Height bumped + a small y_offset/margin so it reads as a floating bar.
+# notch_width reserves the MacBook notch so centred content is never hidden.
+# (If your window's TOP border tucks under the notch, that's the AeroSpace
+#  outer.top gap — tune it in aerospace.toml, not here.)
+sketchybar --bar \
+  height=44 \
+  position=top \
+  y_offset=4 \
+  margin=8 \
+  corner_radius=10 \
+  blur_radius=30 \
+  color=$BAR_COLOR \
+  border_width=2 \
+  border_color=$BAR_BORDER \
+  notch_width=200 \
+  shadow=on \
+  padding_left=8 \
+  padding_right=8
 
-##### Changing Defaults #####
-# We now change some default values, which are applied to all further items.
-# For a full list of all available item properties see:
-# https://felixkratz.github.io/SketchyBar/config/items
-
+##### Defaults — applied to every item unless overridden #####
 default=(
-  padding_left=2
-  padding_right=2
-  icon.font="Hack Nerd Font:Bold:13.0"
-  label.font="Hack Nerd Font:Bold:12.0"
-  icon.color=0xffffffff
-  label.color=0xffffffff
-  icon.padding_left=2
-  icon.padding_right=2
-  label.padding_left=2
-  label.padding_right=2
-  # text.color=0xffe0def4
-  # padding_left=5
-  # padding_right=5
-  # icon.padding_left=4
-  # icon.padding_right=4
-  # label.padding_left=4
-  # label.padding_right=4
+  padding_left=4
+  padding_right=4
+  icon.font="$FONT:Bold:14.0"
+  label.font="$FONT:Semibold:13.0"
+  icon.color=$TEXT
+  label.color=$TEXT
+  icon.padding_left=6
+  icon.padding_right=4
+  label.padding_left=4
+  label.padding_right=6
+  background.height=26
+  background.corner_radius=8
+  popup.background.color=$SURFACE
+  popup.background.corner_radius=10
+  popup.background.border_width=2
+  popup.background.border_color=$IRIS
+  popup.blur_radius=20
 )
 sketchybar --default "${default[@]}"
 
-##### Adding Mission Control Space Indicators #####
-# Let's add some mission control spaces:
-# https://felixkratz.github.io/SketchyBar/config/components#space----associate-mission-control-spaces-with-an-item
-# to indicate active and available mission control spaces.
+##### Custom events #####
+sketchybar --add event aerospace_workspace_change \
+           --add event aerospace_mode
 
-# NOTE: uncomment below for space indicators
-#
-# SPACE_ICONS=("1" "2" "3" "4" "5" "6" "7" "8" "9" "10")
-# for i in "${!SPACE_ICONS[@]}"
-# do
-#   sid="$(($i+1))"
-#   space=(
-#     space="$sid"
-#     icon="${SPACE_ICONS[i]}"
-#     icon.padding_left=7
-#     icon.padding_right=7
-#     background.color=0x40ffffff
-#     background.corner_radius=5
-#     background.height=25
-#     label.drawing=off
-#     script="$PLUGIN_DIR/space.sh"
-#     click_script="yabai -m space --focus $sid"
-#   )
-#   sketchybar --add space space."$sid" left --set space."$sid" "${space[@]}"
-# done
-
-##### Adding Left Items #####
-#
-##### Aerospace specific #####
-
-sketchybar --add event aerospace_workspace_change
-
-# Wait for aerospace to be ready (max 5 seconds)
+# Wait for aerospace to be ready (max 5s) before querying workspaces
 for i in {1..10}; do
-    if pgrep -x "AeroSpace" > /dev/null && aerospace list-workspaces --all 2>/dev/null | grep -q .; then
-        break
-    fi
-    sleep 0.5
+  if pgrep -x "AeroSpace" >/dev/null && aerospace list-workspaces --all 2>/dev/null | grep -q .; then
+    break
+  fi
+  sleep 0.5
 done
 
-# Get all workspace IDs
+##### Left — AeroSpace workspaces, grouped in a bracket #####
 all_workspaces=$(aerospace list-workspaces --all)
+qwerty_order=( 1 2 3 4 5 6 7 8 9 0 q w e r t y u i o p a s d f g h j k l z x c v b n m )
 
-# Define the complete QWERTY layout order
-qwerty_order=(
-    "1" "2" "3" "4" "5" "6" "7" "8" "9" "0"
-    "q" "w" "e" "r" "t" "y" "u" "i" "o" "p"
-    "a" "s" "d" "f" "g" "h" "j" "k" "l"
-    "z" "x" "c" "v" "b" "n" "m"
-)
-
-# Sort the workspaces based on the QWERTY order
 sorted_workspaces=()
-
-# First add workspaces in our defined QWERTY order
 for key in "${qwerty_order[@]}"; do
-    if echo "$all_workspaces" | grep -q "^$key$"; then
-        sorted_workspaces+=("$key")
-    fi
+  echo "$all_workspaces" | grep -q "^$key$" && sorted_workspaces+=("$key")
 done
-
-# Then add any remaining workspaces that weren't in our predefined order
 for sid in $all_workspaces; do
-    if ! printf '%s\n' "${sorted_workspaces[@]}" | grep -q "^$sid$"; then
-        sorted_workspaces+=("$sid")
-    fi
+  printf '%s\n' "${sorted_workspaces[@]}" | grep -q "^$sid$" || sorted_workspaces+=("$sid")
 done
 
-# Create sketchybar items for all workspaces in the sorted order
-    # background.color=0x99eb6f92 \
-    # background.color=0x44ffffff \
-
+space_items=()
 for sid in "${sorted_workspaces[@]}"; do
-    sketchybar --add item space.$sid left \
-        --subscribe space.$sid aerospace_workspace_change \
-        --set space.$sid \
-        label.color=0xffe0def4 \
-        background.border_color=0xff524f67 \
-        background.border_width=0 \
-        background.color=0xffebbcba \
-        background.corner_radius=5 \
-        background.height=20 \
-        background.drawing=off \
-        label="$sid" \
-        click_script="aerospace workspace $sid" \
-        script="$CONFIG_DIR/plugins/aerospace.sh $sid"
+  sketchybar --add item space.$sid left \
+             --subscribe space.$sid aerospace_workspace_change \
+             --set space.$sid \
+                   label="$sid" \
+                   label.color=$SUBTLE \
+                   icon.drawing=off \
+                   background.color=$IRIS \
+                   background.drawing=off \
+                   background.height=24 \
+                   background.corner_radius=8 \
+                   click_script="aerospace workspace $sid" \
+                   script="$PLUGIN_DIR/aerospace.sh $sid"
+  space_items+=( space.$sid )
 done
+if [ ${#space_items[@]} -gt 0 ]; then
+  sketchybar --add bracket workspaces "${space_items[@]}" \
+             --set workspaces \
+                   background.color=$SURFACE \
+                   background.corner_radius=10 \
+                   background.border_width=2 \
+                   background.border_color=$OVERLAY
+fi
 
-# sketchybar --add item testt left \
-#            --set testt icon= label.drawing=off \
-#            --add item aerospace_list_apps left \
-#            --set aerospace_list_apps icon.drawing=off script="$PLUGIN_DIR/aerospace_list_apps.sh" \
-#            --subscribe aerospace_list_apps aerospace_workspace_change
-           # --subscribe aerospace_list_apps aerospace_list_apps_switched
+##### Left — focused application #####
+sketchybar --add item front_app left \
+           --subscribe front_app front_app_switched \
+           --set front_app \
+                 icon="󰣆" \
+                 icon.color=$FOAM \
+                 label.color=$TEXT \
+                 padding_left=10 \
+                 script="$PLUGIN_DIR/front_app.sh"
 
-# We add some regular items to the left side of the bar, where
-# only the properties deviating from the current defaults need to be set
-
-
-# sketchybar --add item chevron left \
-#            --set chevron icon= label.drawing=off \
-#            --add item front_app left \
-#            --set front_app icon.drawing=off script="$PLUGIN_DIR/front_app.sh" \
-#            --subscribe front_app front_app_switched
-
-##### Adding Right Items #####
-# In the same way as the left items we can add items to the right side.
-# Additional position (e.g. center) are available, see:
-# https://felixkratz.github.io/SketchyBar/config/items#adding-items-to-sketchybar
-
-# Some items refresh on a fixed cycle, e.g. the clock runs its script once
-# every 10s. Other items respond to events they subscribe to, e.g. the
-# volume.sh script is only executed once an actual change in system audio
-# volume is registered. More info about the event system can be found here:
-# https://felixkratz.github.io/SketchyBar/config/events
-
-# Items on the right are added in reverse order (last added = leftmost)
-sketchybar --add item battery right \
-           --set battery update_freq=120 script="$PLUGIN_DIR/battery.sh" \
-           --subscribe battery system_woke power_source_change \
-           --add item volume right \
-           --set volume script="$PLUGIN_DIR/volume.sh" \
-           --subscribe volume volume_change \
-           --add item clock right \
-           --set clock update_freq=10 icon="󰃭" script="$PLUGIN_DIR/clock.sh" \
-           --add item lyrics.current right \
-           --set lyrics.current \
-                 label.drawing=on \
-                 width=0 \
-                 padding_left=20 \
-                 padding_right=20 \
-           --add item lyrics right \
-           --set lyrics \
-                 update_freq=1 \
-                 script="$PLUGIN_DIR/lyrics.sh" \
-                 icon.drawing=on \
-                 width=0 \
-                 padding_left=15 \
-           --subscribe lyrics media_change
-
-##### AeroSpace layout cheatsheet (clickable help popup) #####
-# A "?" icon that pops up the tiling shortcuts. The same item doubles as
-# the "LAYOUT" mode indicator (aerospace.toml toggles its label on enter/exit).
+##### Right — layout help pill (corner button + LAYOUT-mode indicator) #####
+# Added first => sits at the far-right corner. Click (or press ? in layout
+# mode) toggles the cheatsheet popup. aerospace.toml triggers aerospace_mode
+# to flip it into a "LAYOUT" indicator while the mode is active.
 sketchybar --add item aerospace_help right \
            --set aerospace_help \
-                 icon="󰋖" \
-                 icon.color=0xffc4a7e7 \
-                 label.drawing=off \
-                 label.color=0xffc4a7e7 \
-                 popup.background.color=0xee191724 \
-                 popup.background.corner_radius=8 \
-                 popup.background.border_width=2 \
-                 popup.background.border_color=0xffc4a7e7 \
-                 popup.horizontal=off \
+                 icon="󰌌" \
+                 icon.color=$IRIS \
+                 label="layout" \
+                 label.color=$SUBTLE \
+                 background.color=$OVERLAY \
+                 background.drawing=on \
+                 background.height=26 \
+                 background.corner_radius=10 \
                  popup.align=right \
-                 popup.y_offset=4 \
+                 popup.y_offset=6 \
                  script="$PLUGIN_DIR/aerospace_help.sh" \
-           --subscribe aerospace_help mouse.clicked mouse.exited.global
+           --subscribe aerospace_help mouse.clicked mouse.entered mouse.exited mouse.exited.global aerospace_mode
 
-# Cheatsheet rows: "key|description". Built into the popup as child items.
+##### Right — system cluster, grouped in a bracket #####
+# Add order is right-to-left, so: cpu · battery · volume · clock (clock far right).
+sketchybar --add item clock right \
+           --set clock update_freq=10 icon="󰃭" icon.color=$IRIS script="$PLUGIN_DIR/clock.sh" \
+           --add item volume right \
+           --set volume icon.color=$FOAM script="$PLUGIN_DIR/volume.sh" \
+           --subscribe volume volume_change \
+           --add item battery right \
+           --set battery update_freq=120 icon.color=$GOLD script="$PLUGIN_DIR/battery.sh" \
+           --subscribe battery system_woke power_source_change \
+           --add graph cpu right 42 \
+           --set cpu update_freq=2 graph.color=$PINE icon="󰓅" icon.color=$PINE label.drawing=off \
+                 script="$PLUGIN_DIR/cpu.sh" \
+           --add bracket system cpu battery volume clock \
+           --set system \
+                 background.color=$SURFACE \
+                 background.corner_radius=10 \
+                 background.border_width=2 \
+                 background.border_color=$OVERLAY
+
+##### Right — Apple Music synced lyrics (event-driven; polls only while playing) #####
+sketchybar --add item lyrics.current right \
+           --set lyrics.current label.drawing=on width=0 padding_left=20 padding_right=20 \
+           --add item lyrics right \
+           --set lyrics update_freq=2 icon.drawing=on width=0 padding_left=15 \
+                 script="$PLUGIN_DIR/lyrics.sh" \
+           --subscribe lyrics media_change
+
+##### Help popup contents #####
+# Rows are "key|description"; built as child items of the help popup.
 help_rows=(
-  "󰍉|AeroSpace layout cheatsheet"
+  "󰌌|AeroSpace layout cheatsheet"
   "⌥ /|tiles — toggle h ↔ v"
   "⌥ ,|accordion"
   "⌥ hjkl|focus window"
@@ -227,17 +192,17 @@ for row in "${help_rows[@]}"; do
   sketchybar --add item aerospace_help.$i popup.aerospace_help \
              --set aerospace_help.$i \
                    icon="$key" \
-                   icon.color=0xffc4a7e7 \
-                   icon.font="Hack Nerd Font:Bold:12.0" \
+                   icon.color=$IRIS \
+                   icon.font="$FONT:Bold:12.0" \
                    icon.padding_left=12 \
                    icon.padding_right=10 \
                    label="$desc" \
-                   label.color=0xffe0def4 \
-                   label.font="Hack Nerd Font:Regular:12.0" \
+                   label.color=$TEXT \
+                   label.font="$FONT:Regular:12.0" \
                    label.padding_right=14 \
                    background.drawing=off
   i=$((i+1))
 done
 
-##### Force all scripts to run the first time (never do this in a script) #####
+##### Force all scripts to run once on load #####
 sketchybar --update

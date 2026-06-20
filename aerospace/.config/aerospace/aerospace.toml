@@ -71,7 +71,11 @@ inner.horizontal = 4
 inner.vertical =   4
 outer.left =       4
 outer.bottom =     4
-outer.top =        [ { monitor."lg ultragear" = 35 }, 0 ]
+# Top gap reserves room for the (taller, floating) sketchybar AND pushes
+# windows below the MacBook notch so their top JankyBorders edge isn't clipped.
+# Two knobs to tune: built-in (notched laptop) and the external ultragear.
+# If the border still tucks under the notch, raise the built-in value (12 -> ~37).
+outer.top =        [ { monitor."lg ultragear" = 40 }, 12 ]
 outer.right =      4
 
 # 'main' binding mode declaration
@@ -163,7 +167,7 @@ alt-shift-semicolon = 'mode service'
 # Layout mode: single-key tile management (focus/join/balance/reset).
 # Shows a "LAYOUT" indicator in sketchybar while active. Click the ? in
 # the bar for the full cheatsheet. esc/enter/q to exit.
-alt-shift-t = ['mode layout', 'exec-and-forget sketchybar --set aerospace_help label="LAYOUT" label.drawing=on']
+alt-shift-t = ['mode layout', 'exec-and-forget sketchybar --trigger aerospace_mode MODE=layout']
 
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
@@ -212,10 +216,10 @@ equal = 'resize smart +50'
 # show/hide this cheatsheet (? = shift-slash); safe here since layout mode
 # captures all keys, so it doesn't hijack ? in other apps
 shift-slash = 'exec-and-forget sketchybar --set aerospace_help popup.drawing=toggle'
-# exit (clears the indicator AND closes the cheatsheet)
-esc   = ['mode main', 'exec-and-forget sketchybar --set aerospace_help label.drawing=off popup.drawing=off']
-enter = ['mode main', 'exec-and-forget sketchybar --set aerospace_help label.drawing=off popup.drawing=off']
-q     = ['mode main', 'exec-and-forget sketchybar --set aerospace_help label.drawing=off popup.drawing=off']
+# exit (resets the help pill AND closes the cheatsheet, via the mode event)
+esc   = ['mode main', 'exec-and-forget sketchybar --trigger aerospace_mode MODE=main']
+enter = ['mode main', 'exec-and-forget sketchybar --trigger aerospace_mode MODE=main']
+q     = ['mode main', 'exec-and-forget sketchybar --trigger aerospace_mode MODE=main']
 
 [workspace-to-monitor-force-assignment]
 1 = 'lg ultragear'

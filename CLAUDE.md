@@ -76,7 +76,10 @@ Managed packages:
 - `vim/.vimrc` - Vim configuration with vim-plug and CoC
 - `aerospace/.config/aerospace/aerospace.toml` - AeroSpace tiling WM (macOS)
 - `borders/.config/borders/bordersrc` - JankyBorders active-window highlight (macOS). Launched by AeroSpace's `after-startup-command`; Rose Pine iris border, no shortcuts (focus-watching daemon)
-- `sketchybar/.config/sketchybar/` - SketchyBar status bar (macOS): `sketchybarrc` + `plugins/`. Launched by AeroSpace; requires Hack Nerd Font + `jq`. Includes `plugins/aerospace_help.sh` which drives the clickable layout cheatsheet popup (the `?` icon)
+- `sketchybar/.config/sketchybar/` - SketchyBar status bar (macOS). Rose Pine Moon theme; floating/frosted bar. Launched by AeroSpace; requires Hack Nerd Font + `jq`. Structure:
+  - `sketchybarrc` - bar appearance + item wiring. Layout: `[workspaces] [front_app] … [lyrics] [cpu volume battery clock] [⌨ layout]`. Workspaces + system items are each grouped in a `--add bracket`.
+  - `colors.sh` - single source of truth for the palette (Rose Pine Moon), sourced by the rc **and** every plugin. Edit colors here, not inline.
+  - `plugins/` - one update script per item: `aerospace.sh` (workspace highlight, animated), `aerospace_help.sh` (layout pill: click→popup, hover, `aerospace_mode` indicator), `battery.sh`/`volume.sh`/`clock.sh`/`cpu.sh` (graph)/`front_app.sh`/`lyrics.sh`.
 
 ### AeroSpace Layout Management
 
@@ -95,9 +98,11 @@ AeroSpace is a tree-based tiler — there are **no grid presets** (`2x2`, `3x3`,
 | `-` / `=` | resize |
 | `?` | toggle the cheatsheet popup (only in layout mode) |
 
-**Cheatsheet popup** (SketchyBar): click the `?` (`aerospace_help` item) — or press `?` while in layout mode — → popup of the shortcuts + recipes. The same item is reused as the layout-mode indicator (its label is toggled by `aerospace.toml` on mode enter/exit).
+**Cheatsheet popup** (SketchyBar): click the `⌨ layout` pill (`aerospace_help` item) — or press `?` while in layout mode — → popup of the shortcuts + recipes. The same pill is the layout-mode indicator: `aerospace.toml` fires `sketchybar --trigger aerospace_mode MODE=layout|main` on enter/exit, and `plugins/aerospace_help.sh` restyles it (→ `● LAYOUT`).
 
 Recipe examples: `1|2,3` = focus the right window, `⌥⇧T` then `⇧K` (join up). `2×2` = join two pairs, then `b`. `two rows` = `⌥/` until the container is vertical.
+
+**Notch / bar geometry**: the bar is taller and floats (`sketchybarrc` → `--bar height=44 y_offset=4 notch_width=200`). The window's top border clearing the notch is controlled by AeroSpace's `[gaps] outer.top` (NOT the bar). Two knobs: built-in (notched laptop, default `12`) and `lg ultragear` (`40`). If the notch still clips the top border, raise the built-in value toward `~37`.
 
 ### Manual Configuration Steps Required
 
