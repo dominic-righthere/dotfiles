@@ -1,39 +1,30 @@
 #!/bin/bash
-# SketchyBar — Rose Pine Moon. Managed in the dotfiles repo (stow package).
+# SketchyBar — Rose Pine Moon, modular. Managed in the dotfiles repo (stow package).
 #
-# Structure / how this is managed:
-#   sketchybarrc   – this file: bar appearance, defaults, item wiring
-#   colors.sh      – Rose Pine Moon palette (sourced here + by every plugin)
-#   plugins/*.sh   – per-item update scripts (one concern each)
+# Structure / how modules load:
+#   sketchybarrc   – this file: bar shell, events, loads ENABLED modules
+#   settings.sh    – module registry + on/off state (the "extensions" layer)
+#   colors.sh      – Rose Pine Moon palette + tokens
+#   items/<m>.sh   – one file per module; sourced ONLY when that module is enabled
+#                    (disabled module = never added = zero runtime cost)
+#   plugins/<x>.sh – update/click scripts run by sketchybar at runtime
 #
-# Layout:  [ workspaces ] [ front_app ] ............ [ lyrics ] [ cpu volume battery clock ] [ ⌨ layout ]
-# Docs: https://felixkratz.github.io/SketchyBar/
+# Toggle modules from the gear popup (far right) or zen via ⌥⇧Z. State persists
+# in ~/.cache/sketchybar/modules.state (outside the repo, survives reload/reboot).
 
-CONFIG_DIR="$HOME/.config/sketchybar"
-PLUGIN_DIR="$CONFIG_DIR/plugins"
+export CONFIG_DIR="$HOME/.config/sketchybar"
+export PLUGIN_DIR="$CONFIG_DIR/plugins"
+ITEM_DIR="$CONFIG_DIR/items"
 source "$CONFIG_DIR/colors.sh"
+source "$CONFIG_DIR/settings.sh"
 
-FONT="Hack Nerd Font"
+export FONT="Hack Nerd Font"
 
 ##### Bar — flush solid black so the notch dissolves into it #####
-# The shell is intentionally INVISIBLE: flat black, borderless, one continuous
-# strip (notch_width=0). Black-on-black hides the MacBook notch. The design
-# lives on the component "islands" (brackets) below, not on the bar.
-# (Window TOP border tucking under the notch is a separate concern — that's the
-#  AeroSpace [gaps] outer.top in aerospace.toml, not the bar.)
 sketchybar --bar \
-  height=44 \
-  position=top \
-  y_offset=0 \
-  margin=0 \
-  corner_radius=0 \
-  blur_radius=0 \
-  color=$BAR_COLOR \
-  border_width=0 \
-  notch_width=0 \
-  shadow=off \
-  padding_left=8 \
-  padding_right=8
+  height=44 position=top y_offset=0 margin=0 corner_radius=0 \
+  blur_radius=0 color=$BAR_COLOR border_width=0 notch_width=0 shadow=off \
+  padding_left=8 padding_right=8
 
 ##### Defaults — applied to every item unless overridden #####
 default=(
@@ -59,7 +50,8 @@ sketchybar --default "${default[@]}"
 
 ##### Custom events #####
 sketchybar --add event aerospace_workspace_change \
-           --add event aerospace_mode
+           --add event aerospace_mode \
+           --add event zen_toggle
 
 # Wait for aerospace to be ready (max 5s) before querying workspaces
 for i in {1..10}; do
@@ -69,140 +61,31 @@ for i in {1..10}; do
   sleep 0.5
 done
 
-##### Left — AeroSpace workspaces, grouped in a bracket #####
-all_workspaces=$(aerospace list-workspaces --all)
-qwerty_order=( 1 2 3 4 5 6 7 8 9 0 q w e r t y u i o p a s d f g h j k l z x c v b n m )
+# Metric modules append their item name here; the system island wraps them.
+SYSTEM_ITEMS=()
 
-sorted_workspaces=()
-for key in "${qwerty_order[@]}"; do
-  echo "$all_workspaces" | grep -q "^$key$" && sorted_workspaces+=("$key")
-done
-for sid in $all_workspaces; do
-  printf '%s\n' "${sorted_workspaces[@]}" | grep -q "^$sid$" || sorted_workspaces+=("$sid")
-done
+##### Left modules (left-to-right) #####
+module_enabled layout     && source "$ITEM_DIR/layout.sh"
+module_enabled workspaces && source "$ITEM_DIR/workspaces.sh"
 
-space_items=()
-for sid in "${sorted_workspaces[@]}"; do
-  sketchybar --add item space.$sid left \
-             --subscribe space.$sid aerospace_workspace_change \
-             --set space.$sid \
-                   label="$sid" \
-                   label.color=$SUBTLE \
-                   icon.drawing=off \
-                   background.color=$IRIS \
-                   background.drawing=off \
-                   background.height=24 \
-                   background.corner_radius=8 \
-                   click_script="aerospace workspace $sid" \
-                   script="$PLUGIN_DIR/aerospace.sh $sid"
-  space_items+=( space.$sid )
-done
-if [ ${#space_items[@]} -gt 0 ]; then
-  sketchybar --add bracket workspaces "${space_items[@]}" \
-             --set workspaces \
-                   background.color=$SURFACE \
+##### Right modules (added rightmost-first: control center is the far corner) #####
+module_enabled control_center && source "$ITEM_DIR/control_center.sh"
+module_enabled clock          && source "$ITEM_DIR/clock.sh"
+module_enabled battery        && source "$ITEM_DIR/battery.sh"
+module_enabled audio          && source "$ITEM_DIR/audio.sh"
+module_enabled cpu            && source "$ITEM_DIR/cpu.sh"
+module_enabled input_source   && source "$ITEM_DIR/input_source.sh"
+module_enabled lyrics         && source "$ITEM_DIR/lyrics.sh"
+
+##### System island — wraps whichever metric items registered #####
+if [ ${#SYSTEM_ITEMS[@]} -gt 0 ]; then
+  sketchybar --add bracket system "${SYSTEM_ITEMS[@]}" \
+             --set system \
+                   background.color=$ISLAND_BG \
                    background.corner_radius=10 \
                    background.border_width=2 \
-                   background.border_color=$OVERLAY
+                   background.border_color=$ISLAND_BORDER
 fi
-
-##### Left — focused application #####
-sketchybar --add item front_app left \
-           --subscribe front_app front_app_switched \
-           --set front_app \
-                 icon="󰣆" \
-                 icon.color=$FOAM \
-                 label.color=$TEXT \
-                 padding_left=10 \
-                 script="$PLUGIN_DIR/front_app.sh"
-
-##### Right — layout help pill (corner button + LAYOUT-mode indicator) #####
-# Added first => sits at the far-right corner. Click (or press ? in layout
-# mode) toggles the cheatsheet popup. aerospace.toml triggers aerospace_mode
-# to flip it into a "LAYOUT" indicator while the mode is active.
-sketchybar --add item aerospace_help right \
-           --set aerospace_help \
-                 icon="󰌌" \
-                 icon.color=$IRIS \
-                 label="layout" \
-                 label.color=$SUBTLE \
-                 background.color=$OVERLAY \
-                 background.drawing=on \
-                 background.height=26 \
-                 background.corner_radius=10 \
-                 popup.align=right \
-                 popup.y_offset=6 \
-                 script="$PLUGIN_DIR/aerospace_help.sh" \
-           --subscribe aerospace_help mouse.clicked mouse.entered mouse.exited mouse.exited.global aerospace_mode
-
-##### Right — system cluster, grouped in a bracket #####
-# Add order is right-to-left, so: cpu · battery · volume · clock (clock far right).
-sketchybar --add item clock right \
-           --set clock update_freq=10 icon="󰃭" icon.color=$IRIS script="$PLUGIN_DIR/clock.sh" \
-           --add item volume right \
-           --set volume icon.color=$FOAM script="$PLUGIN_DIR/volume.sh" \
-           --subscribe volume volume_change \
-           --add item battery right \
-           --set battery update_freq=120 icon.color=$GOLD script="$PLUGIN_DIR/battery.sh" \
-           --subscribe battery system_woke power_source_change \
-           --add graph cpu right 42 \
-           --set cpu update_freq=2 graph.color=$PINE icon="󰓅" icon.color=$PINE label.drawing=off \
-                 script="$PLUGIN_DIR/cpu.sh" \
-           --add bracket system cpu battery volume clock \
-           --set system \
-                 background.color=$ISLAND_BG \
-                 background.corner_radius=10 \
-                 background.border_width=2 \
-                 background.border_color=$ISLAND_BORDER
-
-##### Right — Apple Music synced lyrics (event-driven; polls only while playing) #####
-sketchybar --add item lyrics.current right \
-           --set lyrics.current label.drawing=on width=0 padding_left=20 padding_right=20 \
-           --add item lyrics right \
-           --set lyrics update_freq=2 icon.drawing=on width=0 padding_left=15 \
-                 script="$PLUGIN_DIR/lyrics.sh" \
-           --subscribe lyrics media_change
-
-##### Help popup contents #####
-# Rows are "key|description"; built as child items of the help popup.
-help_rows=(
-  "󰌌|AeroSpace layout cheatsheet"
-  "⌥ /|tiles — toggle h ↔ v"
-  "⌥ ,|accordion"
-  "⌥ hjkl|focus window"
-  "⌥⇧ hjkl|move window"
-  "⌥⇧ -/=|resize"
-  "⌥⇧ T|◆ enter LAYOUT mode:"
-  "h j k l|· focus target window"
-  "⇧ hjkl|· join → build a split"
-  "t|· toggle horizontal/vertical"
-  "a · f|· accordion · float"
-  "b|· balance (even grid)"
-  "r|· reset (flatten)"
-  "?|· show/hide this help"
-  "esc|· exit layout mode"
-  "1│2,3|focus right win → ⇧K"
-  "two rows|⌥ / until vertical"
-  "2×2|join two pairs → b"
-)
-i=0
-for row in "${help_rows[@]}"; do
-  key="${row%%|*}"
-  desc="${row#*|}"
-  sketchybar --add item aerospace_help.$i popup.aerospace_help \
-             --set aerospace_help.$i \
-                   icon="$key" \
-                   icon.color=$IRIS \
-                   icon.font="$FONT:Bold:12.0" \
-                   icon.padding_left=12 \
-                   icon.padding_right=10 \
-                   label="$desc" \
-                   label.color=$TEXT \
-                   label.font="$FONT:Regular:12.0" \
-                   label.padding_right=14 \
-                   background.drawing=off
-  i=$((i+1))
-done
 
 ##### Force all scripts to run once on load #####
 sketchybar --update

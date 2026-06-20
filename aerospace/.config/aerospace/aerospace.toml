@@ -169,6 +169,9 @@ alt-shift-semicolon = 'mode service'
 # the bar for the full cheatsheet. esc/enter/q to exit.
 alt-shift-t = ['mode layout', 'exec-and-forget sketchybar --trigger aerospace_mode MODE=layout']
 
+# Toggle sketchybar zen mode (hide all but the essentials)
+alt-shift-z = 'exec-and-forget sketchybar --trigger zen_toggle'
+
 # 'service' binding mode declaration.
 # See: https://nikitabobko.github.io/AeroSpace/guide#binding-modes
 [mode.service.binding]

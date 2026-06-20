@@ -36,3 +36,10 @@ export BAR_BORDER=$TRANSPARENT  # no border = nothing outlines the notch
 # Component "islands" — the design lives here, not on the bar shell.
 export ISLAND_BG=$SURFACE
 export ISLAND_BORDER=$OVERLAY
+
+# Workspace pills (hybrid: the "before" rose look, kept inside the island)
+export WS_ACTIVE_BG=0xffebbcba   # rose fill on the focused workspace
+export WS_ACTIVE_FG=$BASE        # dark text on the rose pill
+export WS_INACTIVE_FG=$TEXT      # bright text when not focused
+export WS_EMPTY_FG=$MUTED        # dimmed id for empty workspaces
+export DOT_COLOR=$FOAM           # the per-window dots
