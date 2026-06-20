@@ -102,7 +102,9 @@ AeroSpace is a tree-based tiler — there are **no grid presets** (`2x2`, `3x3`,
 
 Recipe examples: `1|2,3` = focus the right window, `⌥⇧T` then `⇧K` (join up). `2×2` = join two pairs, then `b`. `two rows` = `⌥/` until the container is vertical.
 
-**Notch / bar geometry**: the bar is taller and floats (`sketchybarrc` → `--bar height=44 y_offset=4 notch_width=200`). The window's top border clearing the notch is controlled by AeroSpace's `[gaps] outer.top` (NOT the bar). Two knobs: built-in (notched laptop, default `12`) and `lg ultragear` (`40`). If the notch still clips the top border, raise the built-in value toward `~37`.
+**Notch / bar geometry** (design system: invisible black shell + Rose Pine islands):
+- *Bar shell* is flush **solid black**, borderless, `notch_width=0` (`sketchybarrc` → `--bar height=44 y_offset=0 border_width=0 color=$BAR_COLOR`). Black-on-black makes the notch dissolve into the bar — no outline frames it. The visual design lives on the component "islands" (the `workspaces` + `system` brackets), not the shell. Tune blackness via `BAR_COLOR` in `colors.sh` (`0xff000000` flat ↔ `0x40000000` frosted).
+- *Window* top border clearing the notch is a **separate** concern, controlled by AeroSpace's `[gaps] outer.top` (NOT the bar). Two knobs: built-in (notched laptop, default `12`) and `lg ultragear` (`40`). If the notch still clips a window's top border, raise the built-in value toward `~37`.
 
 ### Manual Configuration Steps Required
 

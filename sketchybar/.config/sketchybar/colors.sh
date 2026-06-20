@@ -26,6 +26,13 @@ export HL_HIGH=0xff56526e
 
 # Semantic helpers
 export ACCENT=$IRIS
-export BAR_COLOR=0xcc232136     # translucent base so the blur shows through
-export BAR_BORDER=0x40c4a7e7    # faint iris edge, echoes the window border
 export TRANSPARENT=0x00000000
+
+# Bar shell — deliberately black & borderless so the MacBook notch dissolves
+# into it (black-on-black). Tunable: 0xff000000 = fully flat, 0x40000000 = frosted.
+export BAR_COLOR=0xf0000000
+export BAR_BORDER=$TRANSPARENT  # no border = nothing outlines the notch
+
+# Component "islands" — the design lives here, not on the bar shell.
+export ISLAND_BG=$SURFACE
+export ISLAND_BORDER=$OVERLAY

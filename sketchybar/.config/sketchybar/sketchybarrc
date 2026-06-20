@@ -15,23 +15,23 @@ source "$CONFIG_DIR/colors.sh"
 
 FONT="Hack Nerd Font"
 
-##### Bar — floating, frosted, notch-aware #####
-# Height bumped + a small y_offset/margin so it reads as a floating bar.
-# notch_width reserves the MacBook notch so centred content is never hidden.
-# (If your window's TOP border tucks under the notch, that's the AeroSpace
-#  outer.top gap — tune it in aerospace.toml, not here.)
+##### Bar — flush solid black so the notch dissolves into it #####
+# The shell is intentionally INVISIBLE: flat black, borderless, one continuous
+# strip (notch_width=0). Black-on-black hides the MacBook notch. The design
+# lives on the component "islands" (brackets) below, not on the bar.
+# (Window TOP border tucking under the notch is a separate concern — that's the
+#  AeroSpace [gaps] outer.top in aerospace.toml, not the bar.)
 sketchybar --bar \
   height=44 \
   position=top \
-  y_offset=4 \
-  margin=8 \
-  corner_radius=10 \
-  blur_radius=30 \
+  y_offset=0 \
+  margin=0 \
+  corner_radius=0 \
+  blur_radius=0 \
   color=$BAR_COLOR \
-  border_width=2 \
-  border_color=$BAR_BORDER \
-  notch_width=200 \
-  shadow=on \
+  border_width=0 \
+  notch_width=0 \
+  shadow=off \
   padding_left=8 \
   padding_right=8
 
@@ -150,10 +150,10 @@ sketchybar --add item clock right \
                  script="$PLUGIN_DIR/cpu.sh" \
            --add bracket system cpu battery volume clock \
            --set system \
-                 background.color=$SURFACE \
+                 background.color=$ISLAND_BG \
                  background.corner_radius=10 \
                  background.border_width=2 \
-                 background.border_color=$OVERLAY
+                 background.border_color=$ISLAND_BORDER
 
 ##### Right — Apple Music synced lyrics (event-driven; polls only while playing) #####
 sketchybar --add item lyrics.current right \
