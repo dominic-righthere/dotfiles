@@ -75,7 +75,7 @@ outer.bottom =     4
 # windows below the MacBook notch so their top JankyBorders edge isn't clipped.
 # Two knobs to tune: built-in (notched laptop) and the external ultragear.
 # If the border still tucks under the notch, raise the built-in value (12 -> ~37).
-outer.top =        [ { monitor."lg ultragear" = 40 }, 12 ]
+outer.top =        [ { monitor."built-in" = 12 }, 44 ]
 outer.right =      4
 
 # 'main' binding mode declaration

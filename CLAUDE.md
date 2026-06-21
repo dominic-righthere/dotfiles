@@ -102,7 +102,7 @@ Recipe examples: `1|2,3` = focus the right window, `⌥⇧T` then `⇧K` (join u
 
 **Notch / bar geometry** (design system: invisible black shell + Rose Pine islands):
 - *Bar shell* is flush **solid black**, borderless, `notch_width=0` (`sketchybarrc` → `--bar height=44 y_offset=0 border_width=0 color=$BAR_COLOR`). Black-on-black makes the notch dissolve into the bar — no outline frames it. The visual design lives on the component "islands" (the `workspaces` + `system` brackets), not the shell. Tune blackness via `BAR_COLOR` in `colors.sh` (`0xff000000` flat ↔ `0x40000000` frosted).
-- *Window* top border clearing the notch is a **separate** concern, controlled by AeroSpace's `[gaps] outer.top` (NOT the bar). Two knobs: built-in (notched laptop, default `12`) and `lg ultragear` (`40`). If the notch still clips a window's top border, raise the built-in value toward `~37`.
+- *Window* top border clearing the notch — and **the bar not being covered by windows** — is a **separate** concern, controlled by AeroSpace's `[gaps] outer.top` (the bar has `topmost=off` and reserves no space, so the WM must leave the gap). Set to `[ { monitor."built-in" = 12 }, 44 ]`: the notched built-in needs only `12` (its menu bar already reserves most of the 44px bar), every **external** display needs `44` to clear the full bar — without it, windows cover the bar on a second screen. If the notch still clips a window's top border on the built-in, raise `12` toward `~37`; if there's too much gap on an external, lower `44` toward `40`.
 
 ### SketchyBar module system
 
@@ -125,7 +125,7 @@ essentials (`workspaces`, `clock`, `control_center`).
 
 | Module | Trigger | Cost | Default |
 |--------|---------|------|---------|
-| workspaces (+dots) | event `aerospace_workspace_change` + one `space_driver` poll 3s | `--count` per non-empty ws, ~15ms each | on (essential) |
+| workspaces | event `aerospace_workspace_change` + one `space_driver` poll 3s | 2 aerospace queries/refresh | on (essential) |
 | layout | events only (click/hover/mode) | ~0 idle | on |
 | input_source | poll 1s | `defaults read`, <10ms | on |
 | cpu | poll 2s | `ps` sample, cheap | on |
@@ -134,6 +134,11 @@ essentials (`workspaces`, `clock`, `control_center`).
 | clock | poll 10s | `date` | on (essential) |
 | lyrics | poll 2s while playing | `osascript`/`curl` | **off** |
 | control_center | events only | ~0 idle | on (essential) |
+
+**Multi-display**: when >1 monitor is connected, the workspace pills group by display — a subtle
+`󰍹` glyph + a thin divider lead each monitor's group (e.g. `󰍹 1 2 3 q w e │ 󰍹 a s d`). Single
+display → flat list, no markers. Grouping is computed at load (`items/workspaces.sh` queries
+`aerospace list-workspaces --monitor`), so reconnecting/rearranging displays needs a `sketchybar --reload`.
 
 Audio is **read-only** (shows device + AirPods L/R battery + volume; scroll=volume, click=popup,
 right-click=mute) — no device switching (would need `brew install switchaudio-osx`). Input source
