@@ -7,12 +7,13 @@
 sketchybar --add item aerospace_help left \
            --set aerospace_help \
                  icon="󰕴" \
-                 icon.color=$IRIS \
+                 icon.color=$TEXT \
                  label.drawing=off \
+                 padding_left=2 \
+                 padding_right=2 \
+                 icon.padding_left=4 \
+                 icon.padding_right=4 \
                  background.drawing=off \
-                 background.color=$IRIS \
-                 background.height=22 \
-                 background.corner_radius=6 \
                  popup.align=left \
                  popup.y_offset=6 \
                  script="$PLUGIN_DIR/aerospace_help.sh" \
