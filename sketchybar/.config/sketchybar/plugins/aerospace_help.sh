@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
-# Drives the layout help pill:
+# Drives the layout glyph (icon-only, merged into the window-management island):
 #   click            -> toggle the cheatsheet popup
-#   hover in/out     -> brighten/restore the pill
+#   hover in/out     -> tint the glyph
 #   leave the bar    -> hide the popup
-#   aerospace_mode   -> flip into / out of the "LAYOUT" indicator ($MODE)
-# Wired in sketchybarrc; aerospace.toml triggers aerospace_mode on enter/exit.
+#   aerospace_mode   -> light it up as the "LAYOUT" indicator ($MODE)
 source "$CONFIG_DIR/colors.sh"
 
 case "$SENDER" in
@@ -12,10 +11,10 @@ case "$SENDER" in
     sketchybar --set "$NAME" popup.drawing=toggle
     ;;
   mouse.entered)
-    sketchybar --animate sin 10 --set "$NAME" background.color=$HL_MED
+    sketchybar --set "$NAME" icon.color=$FOAM
     ;;
   mouse.exited)
-    sketchybar --animate sin 10 --set "$NAME" background.color=$OVERLAY
+    sketchybar --set "$NAME" icon.color=$IRIS
     ;;
   mouse.exited.global)
     sketchybar --set "$NAME" popup.drawing=off
@@ -23,11 +22,11 @@ case "$SENDER" in
   aerospace_mode)
     if [ "$MODE" = "layout" ]; then
       sketchybar --animate sin 10 --set "$NAME" \
-        label="● LAYOUT" label.color=$BASE icon.color=$BASE background.color=$IRIS
+        background.drawing=on background.color=$IRIS \
+        icon.color=$BASE label="LAYOUT" label.drawing=on label.color=$BASE
     else
       sketchybar --animate sin 10 --set "$NAME" \
-        label="layout" label.color=$SUBTLE icon.color=$IRIS background.color=$OVERLAY \
-        popup.drawing=off
+        background.drawing=off label.drawing=off icon.color=$IRIS popup.drawing=off
     fi
     ;;
 esac

@@ -30,7 +30,7 @@ sketchybar --bar \
 default=(
   padding_left=4
   padding_right=4
-  icon.font="$FONT:Bold:14.0"
+  icon.font="$FONT:Semibold:13.0"
   label.font="$FONT:Semibold:13.0"
   icon.color=$TEXT
   label.color=$TEXT

@@ -1,17 +1,18 @@
 #!/bin/bash
-# Module: layout — tiling cheatsheet pill (far left) + LAYOUT-mode indicator.
-# Click (or press ? in layout mode) toggles the popup. aerospace.toml triggers
-# aerospace_mode to flip it into a "LAYOUT" indicator while the mode is active.
+# Module: layout — tiling cheatsheet glyph (icon-only), merged into the
+# window-management island next to the workspaces. Click (or ? in layout mode)
+# toggles the popup; aerospace.toml triggers aerospace_mode to light it up as
+# the LAYOUT indicator. The island background is provided by the workspaces
+# bracket, so this item draws no background of its own (until layout mode).
 sketchybar --add item aerospace_help left \
            --set aerospace_help \
-                 icon="󰕰" \
+                 icon="󰕴" \
                  icon.color=$IRIS \
-                 label="layout" \
-                 label.color=$SUBTLE \
-                 background.color=$OVERLAY \
-                 background.drawing=on \
-                 background.height=26 \
-                 background.corner_radius=10 \
+                 label.drawing=off \
+                 background.drawing=off \
+                 background.color=$IRIS \
+                 background.height=22 \
+                 background.corner_radius=6 \
                  popup.align=left \
                  popup.y_offset=6 \
                  script="$PLUGIN_DIR/aerospace_help.sh" \
@@ -19,7 +20,7 @@ sketchybar --add item aerospace_help left \
 
 # Cheatsheet rows ("key|description") built as popup children.
 help_rows=(
-  "󰕰|AeroSpace layout cheatsheet"
+  "󰕴|AeroSpace layout cheatsheet"
   "⌥ /|tiles — toggle h ↔ v"
   "⌥ ,|accordion"
   "⌥ hjkl|focus window"
@@ -43,9 +44,9 @@ for row in "${help_rows[@]}"; do
   key="${row%%|*}"; desc="${row#*|}"
   sketchybar --add item aerospace_help.$i popup.aerospace_help \
              --set aerospace_help.$i \
-                   icon="$key" icon.color=$IRIS icon.font="$FONT:Bold:12.0" \
+                   icon="$key" icon.color=$IRIS \
                    icon.padding_left=12 icon.padding_right=10 \
-                   label="$desc" label.color=$TEXT label.font="$FONT:Regular:12.0" \
+                   label="$desc" label.color=$TEXT \
                    label.padding_right=14 background.drawing=off
   i=$((i+1))
 done
