@@ -30,8 +30,11 @@ sketchybar --bar \
 default=(
   padding_left=4
   padding_right=4
-  icon.font="$FONT:Semibold:13.0"
-  label.font="$FONT:Semibold:13.0"
+  # Hack only ships Regular/Bold (no Semibold/Medium) — using a weight Hack
+  # doesn't have makes macOS silently fall back to SF Pro. Keep both Bold so
+  # every label + icon renders in true Hack Nerd Font.
+  icon.font="$FONT:Bold:14.0"
+  label.font="$FONT:Bold:13.0"
   icon.color=$TEXT
   label.color=$TEXT
   icon.padding_left=6
