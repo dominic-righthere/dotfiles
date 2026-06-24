@@ -30,24 +30,39 @@ export LANG=en_US.UTF-8
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 #
-# nvm
-[[ -s $HOME/.nvm/nvm.sh ]] && . $HOME/.nvm/nvm.sh  # This loads NVM
+# nvm — lazy-loaded: sourcing nvm.sh is slow (~250ms), so defer it until the
+# first time you actually use nvm/node/npm/npx (keeps shell startup fast).
+export NVM_DIR="$HOME/.nvm"
+if [ -s "$NVM_DIR/nvm.sh" ]; then
+  _load_nvm() {
+    unset -f nvm node npm npx
+    . "$NVM_DIR/nvm.sh"
+    [ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+  }
+  nvm()  { _load_nvm; nvm  "$@"; }
+  node() { _load_nvm; node "$@"; }
+  npm()  { _load_nvm; npm  "$@"; }
+  npx()  { _load_nvm; npx  "$@"; }
+fi
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '$HOME/google-cloud-sdk/path.zsh.inc' ]; then . '%HOME/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '%HOME/google-cloud-sdk/completion.zsh.inc' ]; then . '%HOME/google-cloud-sdk/completion.zsh.inc'; fi
+# (Google Cloud SDK init removed — the old lines were broken quoting and the
+#  files don't exist. `gcloud`'s installer re-adds correct lines if installed.)
 
 # python
 alias pip=/usr/bin/pip3
 # alias python=/usr/local/bin/python3
 # alias python=~/.pyenv/shims/python
 
-# pyenv
+# pyenv — fast path only at startup: `pyenv init --path` just puts the shims on
+# PATH (so `python`/`pip` resolve to the right version immediately), and the full
+# shell integration (`pyenv` function, completions, rehash, ~90ms) is deferred to
+# the first `pyenv` call.
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
+if command -v pyenv >/dev/null; then
+  eval "$(pyenv init --path)"
+  pyenv() { unset -f pyenv; eval "$(command pyenv init -)"; pyenv "$@"; }
+fi
 
 
 export DEFAULT_USER="$(whoami)"

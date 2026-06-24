@@ -170,10 +170,17 @@ a Spotlight/Raycast launcher — add as `items/<name>.sh` + a `plugins/<name>.sh
   cd smctemp
   sudo make install
   ```
+- Windows/panes start at index 1 (`base-index`/`pane-base-index`). Sessions also start at 1:
+  a `session-created` hook (`~/.tmux/session-from-1.sh`, stowed from `tmux/.tmux/`) renames a new
+  `0` session to the next free number. `prefix + g` opens a 1-based session menu
+  (`~/.tmux/session-menu.sh`, press `1` for the first session); `prefix + s` keeps the default tree.
 
 **Zsh Setup:**
 - oh-my-zsh is auto-installed
 - Plugins (zsh-autosuggestions, zsh-syntax-highlighting) are auto-cloned
+- **nvm and pyenv are lazy-loaded** for fast startup (~0.18s vs ~0.45s eager): nvm.sh is deferred
+  until the first `nvm`/`node`/`npm`/`npx` call; pyenv does the fast `pyenv init --path` eagerly
+  (so `python` works) and defers the full `pyenv init -` to the first `pyenv` call.
 
 **iSH-Specific Setup:**
 - SSH key generation for GitHub: `ssh-keygen -t ed25519 -C "github" -f ~/.ssh/ed25519_github`
