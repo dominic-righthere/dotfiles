@@ -137,8 +137,10 @@ essentials (`workspaces`, `clock`, `control_center`).
 
 **Multi-display**: when >1 monitor is connected, the workspace pills group by display — a subtle
 `󰍹` glyph + a thin divider lead each monitor's group (e.g. `󰍹 1 2 3 q w e │ 󰍹 a s d`). Single
-display → flat list, no markers. Grouping is computed at load (`items/workspaces.sh` queries
-`aerospace list-workspaces --monitor`), so reconnecting/rearranging displays needs a `sketchybar --reload`.
+display → flat list, no markers. Grouping is recomputed at load; the `space_driver` **auto-reloads
+on display change** (connect / disconnect / mirror) — it compares a monitor signature each 3s tick
+(+ the `display_change` event) against `~/.cache/sketchybar/monitors.sig` and reloads only when it
+changes (no manual `sketchybar --reload` needed, no reload loop).
 
 Audio is **read-only** (shows device + AirPods L/R battery + volume; scroll=volume, click=popup,
 right-click=mute) — no device switching (would need `brew install switchaudio-osx`). Input source

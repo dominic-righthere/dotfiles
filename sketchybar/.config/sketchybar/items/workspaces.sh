@@ -8,6 +8,12 @@
 
 qwerty_order=( 1 2 3 4 5 6 7 8 9 0 q w e r t y u i o p a s d f g h j k l z x c v b n m )
 
+# Seed the monitor signature so the driver only reloads on an ACTUAL display
+# change (connect / disconnect / mirror), not on every poll. Must match the
+# command the driver uses in plugins/workspaces.sh.
+printf '%s' "$(aerospace list-monitors --format '%{monitor-id}|%{monitor-name}' 2>/dev/null | sort)" \
+  > "${XDG_CACHE_HOME:-$HOME/.cache}/sketchybar/monitors.sig"
+
 mon_ids=$(aerospace list-monitors --format '%{monitor-id}' 2>/dev/null | sort -n)
 mon_count=$(printf '%s\n' "$mon_ids" | grep -c .)
 
@@ -67,7 +73,7 @@ done
 sketchybar --add item space_driver left \
            --set space_driver drawing=off update_freq=3 \
                  script="$PLUGIN_DIR/workspaces.sh" \
-           --subscribe space_driver aerospace_workspace_change
+           --subscribe space_driver aerospace_workspace_change display_change
 
 # Island wraps the layout glyph (if enabled) + the grouped markers/pills.
 bracket_items=()
