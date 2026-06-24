@@ -1,3 +1,5 @@
 *.swp
 *.un~
 .DS_Store
+# machine-local / personal shell config (secrets, service URLs) — never commit
+.zshrc.local

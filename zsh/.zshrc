@@ -75,13 +75,13 @@ export EDITOR=nvim
 export VISUAL=nvim
 
 # Created by `pipx` on 2024-11-17 11:39:01
-export PATH="$PATH:/Users/dom/.local/bin"
+export PATH="$PATH:$HOME/.local/bin"
 
 # Added by Windsurf
-export PATH="/Users/dom/.codeium/windsurf/bin:$PATH"
+export PATH="$HOME/.codeium/windsurf/bin:$PATH"
 
 # pnpm
-export PNPM_HOME="/Users/dom/Library/pnpm"
+export PNPM_HOME="$HOME/Library/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
@@ -89,10 +89,12 @@ esac
 # pnpm end
 
 # Added by Antigravity
-export PATH="/Users/dom/.antigravity/antigravity/bin:$PATH"
+export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
 
 
 # Kiro CLI post block. Keep at the bottom of this file.
 [[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh"
 
-export ENQUIRE_BRIDGE_URL=https://bridge.enqr.dev
+# Machine-local / personal config (secrets, service URLs, per-host PATHs).
+# Keep out of the public repo — ~/.zshrc.local is gitignored.
+[[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
