@@ -43,11 +43,16 @@ Installs: zsh, bash, openssh, git, stow, tmux, vim, neovim, shadow
 
 **For macOS:**
 ```bash
-source ./packages/homebrew.sh
+./packages/homebrew.sh        # installs Homebrew if missing, then `brew bundle` the Brewfile
+# or directly:  brew bundle --file packages/Brewfile
 ```
-Installs: neovim, tmux, nvm, ollama, iterm2, google-chrome, borders (JankyBorders), sketchybar, font-hack-nerd-font, jq
-Note: On macOS, packages must be installed manually as homebrew requires interactive setup
-Note: borders + sketchybar come from the `FelixKratz/formulae` tap (added by the script). sketchybar needs Hack Nerd Font for its glyphs.
+Packages are declared in **`packages/Brewfile`** (curated, not a full dump). It installs `stow`,
+`pyenv`, `nvm`, `neovim`, `tmux`, `jq`, dev CLI (gh/fd/uv/go/…), and the macOS WM/bar stack
+(`borders`, `sketchybar`, cask `aerospace`, `font-hack-nerd-font`). Taps: `felixkratz/formulae`
+(borders/sketchybar), `nikitabobko/tap` (aerospace).
+- `init.sh` runs this on macOS **before** stowing (so `stow` exists). `setup/stow.sh` guards on it.
+- Re-sync the Brewfile from the live machine, then hand-trim: `brew bundle dump --force --describe --file packages/Brewfile`.
+- sketchybar needs Hack Nerd Font for its glyphs. AeroSpace needs Accessibility permission (manual, macOS-gated).
 
 ## Configuration Management
 

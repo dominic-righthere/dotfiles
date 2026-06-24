@@ -1,0 +1,55 @@
+# Brewfile — curated essentials for this dev environment.
+# Install/sync:   brew bundle --file packages/Brewfile
+# Check status:   brew bundle check --file packages/Brewfile
+# Re-sync from this machine (then hand-trim):
+#                 brew bundle dump --force --describe --file packages/Brewfile
+#
+# This is a CURATED subset, not a full `brew bundle dump` — it captures the
+# reproducible toolchain + the macOS window-manager/status-bar stack, and leaves
+# out personal apps and the extra Nerd Fonts. Add anything you want back below.
+
+# ── Taps ──────────────────────────────────────────────────────────────────
+tap "felixkratz/formulae"   # borders, sketchybar
+tap "nikitabobko/tap"       # aerospace
+
+# ── Core / dotfiles toolchain ─────────────────────────────────────────────
+brew "stow"                 # bootstraps the dotfiles themselves (symlinks)
+brew "neovim"
+brew "tmux"
+brew "jq"                   # used by sketchybar plugins
+brew "pyenv"                # used by .zshrc
+brew "nvm"
+
+# ── Dev CLI ───────────────────────────────────────────────────────────────
+brew "gh"
+brew "git-lfs"
+brew "fd"
+brew "uv"
+brew "go"
+brew "pipx"
+brew "mkcert"
+brew "awscli"
+brew "pandoc"
+brew "watchman"
+brew "tokei"
+brew "trivy"
+brew "yazi"
+brew "yt-dlp"
+
+# ── macOS window-manager / status-bar stack ───────────────────────────────
+brew "borders"              # JankyBorders — active-window highlight
+brew "sketchybar"
+cask "aerospace"            # tiling window manager
+cask "font-hack-nerd-font"  # required by the sketchybar glyphs
+
+# ── Apps (swap/trim to taste) ─────────────────────────────────────────────
+cask "ghostty"              # terminal
+cask "google-chrome"
+cask "docker-desktop"
+cask "visual-studio-code"
+
+# Not included (add if you want them on a new machine):
+#   - extra Nerd Fonts (font-jetbrains-mono-nerd-font, font-iosevka-nerd-font, ...)
+#   - personal apps (telegram, the-unarchiver, ...) and Mac App Store (`mas`) apps
+#   - niche tools: ollama, openjdk@21, pandoc-extras, mpd/kew/rmpc, sonarqube,
+#     railway, ta-lib, xcodegen, vhs, poppler, watch, aria2, aichat, mcp-publisher

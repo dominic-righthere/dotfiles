@@ -4,6 +4,12 @@
 
 set -e
 
+# stow must be installed first (packages/homebrew.sh on macOS, apt/apk on Linux).
+if ! command -v stow >/dev/null 2>&1; then
+    echo "error: 'stow' is not installed — run packages/homebrew.sh (macOS) or install it via apt/apk first." >&2
+    exit 1
+fi
+
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT"
 

@@ -1,8 +1,7 @@
 #!/bin/bash
 
-source ./setup/stow.sh
-
-# Detect OS and run appropriate setup
+# Detect OS and install packages FIRST — `setup/stow.sh` needs `stow`, which the
+# package step installs (so this must run before stowing).
 os_name="$(uname -s)"
 kernel_release=$(uname -r)
 
@@ -20,12 +19,17 @@ if [ "$os_name" = "Linux" ]; then
     fi
 elif [ "$os_name" = "Darwin" ]; then
     echo "Running on macOS"
-    echo "Run './packages/homebrew.sh' to install packages"
+    # Installs Homebrew (if missing) + the Brewfile, which includes stow, pyenv,
+    # aerospace, etc. May prompt once on a fresh machine (Homebrew install).
+    source ./packages/homebrew.sh
     source ./setup/vim.sh
     source ./setup/neovim.sh
 else
     echo "Unsupported OS: $os_name"
 fi
+
+# Symlink the dotfiles (requires stow, installed above)
+source ./setup/stow.sh
 
 source ./setup/tmux.sh
 

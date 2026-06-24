@@ -35,19 +35,27 @@ cd dotfiles
 bash init.sh
 ```
 
-`init.sh` symlinks the Stow packages, detects the OS, and runs the appropriate setup. On **macOS**,
-Homebrew packages are installed as a manual step (Homebrew prompts interactively):
+`init.sh` detects the OS, **installs packages first**, then symlinks the Stow packages and runs the
+per-tool setup. On **macOS** it installs Homebrew (if needed) and everything in
+[`packages/Brewfile`](packages/Brewfile) via `brew bundle` — or run the packages step on its own:
 
 ```bash
-./packages/homebrew.sh
+brew bundle --file packages/Brewfile     # or: ./packages/homebrew.sh
 ```
 
-Then, inside tmux, press `prefix + I` to install the tmux plugins.
+The Brewfile is a **curated** set (toolchain + the window-manager/status-bar stack), not a full
+dump — edit it to taste, or `brew bundle dump` to re-sync from your machine.
+
+**Manual steps that can't be scripted (macOS):**
+- Grant **Accessibility** permission to AeroSpace (System Settings → Privacy & Security → Accessibility) — required for tiling.
+- In tmux, press `prefix + I` to install the tmux plugins.
+- Optional: `smctemp` for tmux-temp, `macism` for the input-source indicator, `switchaudio-osx` for audio device switching.
 
 ## macOS desktop stack
 
 > Requires [Hack Nerd Font](https://www.nerdfonts.com/) + `jq` for SketchyBar, and the
-> `FelixKratz/formulae` tap for `borders` and `sketchybar` (the homebrew script adds it).
+> `FelixKratz/formulae` / `nikitabobko/tap` taps for `borders`/`sketchybar`/`aerospace`
+> (all in the Brewfile).
 
 ### AeroSpace — layouts
 
