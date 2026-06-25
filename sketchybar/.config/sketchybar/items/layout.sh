@@ -4,8 +4,8 @@
 # toggles the popup; aerospace.toml triggers aerospace_mode to light it up as
 # the LAYOUT indicator. The island background is provided by the workspaces
 # bracket, so this item draws no background of its own (until layout mode).
-sketchybar --add item aerospace_help left \
-           --set aerospace_help \
+sketchybar --add item layout left \
+           --set layout \
                  icon="󰕴" \
                  icon.color=$TEXT \
                  label.drawing=off \
@@ -17,8 +17,8 @@ sketchybar --add item aerospace_help left \
                  popup.align=left \
                  popup.y_offset=6 \
                  popup.height=22 \
-                 script="$PLUGIN_DIR/aerospace_help.sh" \
-           --subscribe aerospace_help mouse.clicked mouse.entered mouse.exited mouse.exited.global aerospace_mode
+                 script="$PLUGIN_DIR/layout.sh" \
+           --subscribe layout mouse.clicked mouse.entered mouse.exited mouse.exited.global aerospace_mode
 
 # Cheatsheet — its own design: monospace Hack for the command column, a clean
 # system sans for descriptions, plain-text modifiers (no uneven glyphs).
@@ -60,17 +60,17 @@ rows=(
 i=0
 for row in "${rows[@]}"; do
   IFS='|' read -r kind cmd desc <<< "$row"
-  name="aerospace_help.$i"
+  name="layout.$i"
   case "$kind" in
     T)
-      sketchybar --add item "$name" popup.aerospace_help \
+      sketchybar --add item "$name" popup.layout \
                  --set "$name" \
                        icon="$cmd" icon.color=$FOAM icon.font="$FONT:Bold:14.0" \
                        icon.padding_left=16 icon.padding_right=10 \
                        label="$desc" label.color=$TEXT label.font="$TITLE_FONT" \
                        label.padding_right=20 background.drawing=off ;;
     H)
-      sketchybar --add item "$name" popup.aerospace_help \
+      sketchybar --add item "$name" popup.layout \
                  --set "$name" \
                        icon.drawing=off \
                        label="$desc" label.color=$GOLD label.font="$HDR_FONT" \
@@ -78,7 +78,7 @@ for row in "${rows[@]}"; do
                        background.drawing=on background.color=$OVERLAY \
                        background.height=18 background.corner_radius=4 ;;
     R)
-      sketchybar --add item "$name" popup.aerospace_help \
+      sketchybar --add item "$name" popup.layout \
                  --set "$name" \
                        icon="$cmd" icon.color=$FOAM icon.font="$CMD_FONT" \
                        icon.width=140 icon.align=left \

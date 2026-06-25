@@ -6,8 +6,12 @@
 #   settings.sh    – module registry + on/off state (the "extensions" layer)
 #   colors.sh      – Rose Pine Moon palette + tokens
 #   items/<m>.sh   – one file per module; sourced ONLY when that module is enabled
-#                    (disabled module = never added = zero runtime cost)
-#   plugins/<x>.sh – update/click scripts run by sketchybar at runtime
+#                    (disabled module = never added = zero runtime cost). NB: items
+#                    are sourced into THIS file's scope — they rely on colors.sh,
+#                    settings.sh, $FONT, $SYSTEM_ITEMS and module_enabled already
+#                    being set here (this rc is the composition root).
+#   plugins/<x>.sh – update/click scripts EXECUTED by sketchybar at runtime
+#                    (they source colors.sh themselves; $NAME/$SENDER come from sketchybar)
 #
 # Toggle modules from the gear popup (far right) or zen via ⌥⇧Z. State persists
 # in ~/.cache/sketchybar/modules.state (outside the repo, survives reload/reboot).

@@ -1,6 +1,7 @@
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+It is the **deep maintainer/AI reference**; [`README.md`](README.md) is the user-facing overview — keep both in sync when behaviour changes.
 
 ## Repository Overview
 
@@ -101,7 +102,7 @@ AeroSpace is a tree-based tiler — there are **no grid presets** (`2x2`, `3x3`,
 | `-` / `=` | resize |
 | `?` | toggle the cheatsheet popup (only in layout mode) |
 
-**Cheatsheet popup** (SketchyBar): click the layout pill (`aerospace_help` item, `󰕰` glyph, far **left** of the bar) — or press `?` while in layout mode — → popup of the shortcuts + recipes. The same pill is the layout-mode indicator: `aerospace.toml` fires `sketchybar --trigger aerospace_mode MODE=layout|main` on enter/exit, and `plugins/aerospace_help.sh` restyles it (→ `● LAYOUT`).
+**Cheatsheet popup** (SketchyBar): click the layout pill (`layout` item, `󰕴` glyph, far **left** of the bar) — or press `?` while in layout mode — → popup of the shortcuts + recipes. The same pill is the layout-mode indicator: `aerospace.toml` fires `sketchybar --trigger aerospace_mode MODE=layout|main` on enter/exit, and `plugins/layout.sh` restyles it (→ `● LAYOUT`).
 
 Recipe examples: `1|2,3` = focus the right window, `⌥⇧T` then `⇧K` (join up). `2×2` = join two pairs, then `b`. `two rows` = `⌥/` until the container is vertical.
 

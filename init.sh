@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Run from the repo root regardless of the invocation directory (the sources
+# below use repo-relative paths like ./setup/... and ./packages/...).
+cd "$(dirname "${BASH_SOURCE[0]:-$0}")" || exit 1
+
 # Detect OS and install packages FIRST — `setup/stow.sh` needs `stow`, which the
 # package step installs (so this must run before stowing).
 os_name="$(uname -s)"

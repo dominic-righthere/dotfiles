@@ -27,6 +27,9 @@ Each top-level directory is a Stow package that mirrors its target path under `~
 
 Plus `setup/` (per-tool setup scripts), `packages/` (per-OS package installers), and `utils/`.
 
+> The **Neovim** config is *not* in this repo — `setup/neovim.sh` clones an external
+> [kickstart.nvim](https://github.com/dominic-righthere/kickstart.nvim) into `~/.config/nvim`. This repo manages classic `vim`.
+
 ## Install
 
 ```bash

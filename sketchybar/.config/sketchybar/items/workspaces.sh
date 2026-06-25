@@ -77,7 +77,7 @@ sketchybar --add item space_driver left \
 
 # Island wraps the layout glyph (if enabled) + the grouped markers/pills.
 bracket_items=()
-module_enabled layout && bracket_items+=( aerospace_help )
+module_enabled layout && bracket_items+=( layout )
 bracket_items+=( "${ws_items[@]}" )
 
 if [ ${#ws_items[@]} -gt 0 ]; then

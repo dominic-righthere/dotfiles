@@ -1,9 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # SketchyBar plugin to display current Apple Music lyrics
 # Fetches synchronized lyrics from LRCLIB.net API
 # Dynamically adjusts update frequency based on BPM
-# Shows prev (grey) | current (white) | next (grey)
+# Shows prev (subtle) | current (text) | next (subtle)
+
+source "$CONFIG_DIR/colors.sh"
 
 CACHE_DIR="/tmp/sketchybar_lyrics"
 mkdir -p "$CACHE_DIR"
@@ -180,16 +182,16 @@ if [ -n "$synced_lyrics" ] && [ "$synced_lyrics" != "null" ]; then
         next_trimmed="${next_line:0:25}"
 
         # Update three separate items with different colors
-        # Grey for prev/next, white for current
+        # Subtle for prev/next, bright text for the current line
 
-        # Previous line (grey: 0xff808080)
-        sketchybar --set lyrics.prev label="$prev_trimmed" label.color=0xff808080
+        # Previous line
+        sketchybar --set lyrics.prev label="$prev_trimmed" label.color=$SUBTLE
 
-        # Current line (white/highlighted: 0xffffffff)
-        sketchybar --set lyrics.current label="$current_trimmed" label.color=0xffffffff
+        # Current line (highlighted)
+        sketchybar --set lyrics.current label="$current_trimmed" label.color=$TEXT
 
-        # Next line (grey: 0xff808080)
-        sketchybar --set lyrics.next label="$next_trimmed" label.color=0xff808080
+        # Next line
+        sketchybar --set lyrics.next label="$next_trimmed" label.color=$SUBTLE
 
         # Icon on main item
         sketchybar --set "$NAME" icon="♪" label=""

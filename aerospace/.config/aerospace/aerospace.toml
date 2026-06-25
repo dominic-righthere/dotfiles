@@ -218,7 +218,7 @@ minus = 'resize smart -50'
 equal = 'resize smart +50'
 # show/hide this cheatsheet (? = shift-slash); safe here since layout mode
 # captures all keys, so it doesn't hijack ? in other apps
-shift-slash = 'exec-and-forget sketchybar --set aerospace_help popup.drawing=toggle'
+shift-slash = 'exec-and-forget sketchybar --set layout popup.drawing=toggle'
 # exit (resets the help pill AND closes the cheatsheet, via the mode event)
 esc   = ['mode main', 'exec-and-forget sketchybar --trigger aerospace_mode MODE=main']
 enter = ['mode main', 'exec-and-forget sketchybar --trigger aerospace_mode MODE=main']
