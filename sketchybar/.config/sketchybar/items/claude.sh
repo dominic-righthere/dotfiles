@@ -10,5 +10,8 @@ sketchybar --add item claude right \
                  icon.color=$FOAM \
                  label.drawing=off \
                  drawing=off \
-                 script="$PLUGIN_DIR/claude.sh"
+                 popup.align=center \
+                 popup.y_offset=6 \
+                 script="$PLUGIN_DIR/claude.sh" \
+           --subscribe claude mouse.entered mouse.exited
 MONITORING_ITEMS+=( claude )
