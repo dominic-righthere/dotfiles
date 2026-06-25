@@ -83,7 +83,7 @@ Managed packages:
 - `aerospace/.config/aerospace/aerospace.toml` - AeroSpace tiling WM (macOS)
 - `borders/.config/borders/bordersrc` - JankyBorders active-window highlight (macOS). Launched by AeroSpace's `after-startup-command`; Rose Pine iris border, no shortcuts (focus-watching daemon)
 - `sketchybar/.config/sketchybar/` - SketchyBar status bar (macOS). Rose Pine Moon theme; flush black bar + island components. **Modular** — each feature is a toggleable module. Launched by AeroSpace; requires Hack Nerd Font + `jq`. See "SketchyBar module system" below.
-  - Bar layout: `[layout][workspaces] … [lyrics] · island[input cpu audio battery clock] · [⚙ control center]`.
+  - Bar layout: `[layout][workspaces] … [lyrics] · monitoring[cpu claude] · system[input audio battery clock] · [⚙ control center]`. Two right-hand islands: **monitoring** (`MONITORING_ITEMS` in `sketchybarrc`) and **system** (`SYSTEM_ITEMS`).
 
 ### AeroSpace Layout Management
 
@@ -135,11 +135,19 @@ essentials (`workspaces`, `clock`, `control_center`).
 | layout | events only (click/hover/mode) | ~0 idle | on |
 | input_source | poll 1s | `defaults read`, <10ms | on |
 | cpu | poll 2s | `ps` sample, cheap | on |
+| claude | poll 1s | greps `~/.local/share/agent-notifier/{active,notifications}` (cheap) | on |
 | audio | event `volume_change` + on-click | `system_profiler` only on popup-open (~300ms), volume via `osascript` | on |
 | battery | poll 120s + `power_source_change` | `pmset`, cheap | on |
 | clock | poll 10s | `date` | on (essential) |
 | lyrics | poll 2s while playing | `osascript`/`curl` | **off** |
 | control_center | events only | ~0 idle | on (essential) |
+
+**Claude indicator** (`claude` module, in the `monitoring` island): reads the **external**
+[tmux-agent-notifier](https://github.com/) state — `~/.local/share/agent-notifier/{active,notifications}`,
+written by Claude Code hooks — and shows a `󰚩` robot that gently pulses **foam** while any session is
+*working* and **amber** while any is *waiting* for an answer (waiting wins); hidden when idle/none.
+`plugins/claude.sh` polls 1s (cheap greps; ages match the notifier: working 1h, waiting 24h). No
+notifier installed → state dirs absent → the item just stays hidden (safe/portable).
 
 **Multi-display**: when >1 monitor is connected, the workspace pills group by display — a subtle
 `󰍹` glyph + a thin divider lead each monitor's group (e.g. `󰍹 1 2 3 q w e │ 󰍹 a s d`). Single

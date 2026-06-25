@@ -68,23 +68,36 @@ for i in {1..10}; do
   sleep 0.5
 done
 
-# Metric modules append their item name here; the system island wraps them.
-SYSTEM_ITEMS=()
+# Modules append their item name to one of these; each island wraps its own.
+SYSTEM_ITEMS=()       # input · audio · battery · clock
+MONITORING_ITEMS=()   # cpu · claude session indicator
 
 ##### Left modules (left-to-right) #####
 module_enabled layout     && source "$ITEM_DIR/layout.sh"
 module_enabled workspaces && source "$ITEM_DIR/workspaces.sh"
 
 ##### Right modules (added rightmost-first: control center is the far corner) #####
-module_enabled control_center && source "$ITEM_DIR/control_center.sh"
+module_enabled control_center && source "$ITEM_DIR/control_center.sh"   # gear (far right)
+# system island
 module_enabled clock          && source "$ITEM_DIR/clock.sh"
 module_enabled battery        && source "$ITEM_DIR/battery.sh"
 module_enabled audio          && source "$ITEM_DIR/audio.sh"
-module_enabled cpu            && source "$ITEM_DIR/cpu.sh"
 module_enabled input_source   && source "$ITEM_DIR/input_source.sh"
+# monitoring island (left of the system island): cpu + agent sessions
+module_enabled claude         && source "$ITEM_DIR/claude.sh"
+module_enabled cpu            && source "$ITEM_DIR/cpu.sh"
+# now-playing (leftmost of the right side)
 module_enabled lyrics         && source "$ITEM_DIR/lyrics.sh"
 
-##### System island — wraps whichever metric items registered #####
+##### Islands — each bracket wraps whichever items registered #####
+if [ ${#MONITORING_ITEMS[@]} -gt 0 ]; then
+  sketchybar --add bracket monitoring "${MONITORING_ITEMS[@]}" \
+             --set monitoring \
+                   background.color=$ISLAND_BG \
+                   background.corner_radius=10 \
+                   background.border_width=2 \
+                   background.border_color=$ISLAND_BORDER
+fi
 if [ ${#SYSTEM_ITEMS[@]} -gt 0 ]; then
   sketchybar --add bracket system "${SYSTEM_ITEMS[@]}" \
              --set system \

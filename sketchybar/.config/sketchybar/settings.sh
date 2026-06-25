@@ -15,7 +15,7 @@ mkdir -p "$STATE_DIR"
 
 # Module order on the bar. left-anchored ones are placed by their items file;
 # everything else lands in the right-hand system cluster.
-MODULES=(layout workspaces input_source cpu audio battery clock lyrics control_center)
+MODULES=(layout workspaces input_source cpu claude audio battery clock lyrics control_center)
 
 # Always on (cannot be toggled off; also kept in zen mode so you can recover).
 ESSENTIALS=(workspaces clock control_center)
