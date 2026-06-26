@@ -83,6 +83,15 @@ module_enabled clock          && source "$ITEM_DIR/clock.sh"
 module_enabled battery        && source "$ITEM_DIR/battery.sh"
 module_enabled audio          && source "$ITEM_DIR/audio.sh"
 module_enabled input_source   && source "$ITEM_DIR/input_source.sh"
+# Spacer between the system & monitoring islands. Two adjacent brackets always
+# abut (each background swallows its members' outer padding), so an un-bracketed
+# item is the only way to separate the island backgrounds — it sits in the gap
+# and belongs to neither. Only emit it when the monitoring island will exist.
+if module_enabled claude || module_enabled cpu; then
+  sketchybar --add item island_gap right \
+             --set island_gap width=8 background.drawing=off \
+                   icon.drawing=off label.drawing=off padding_left=0 padding_right=0
+fi
 # monitoring island (left of the system island): cpu + agent sessions
 module_enabled claude         && source "$ITEM_DIR/claude.sh"
 module_enabled cpu            && source "$ITEM_DIR/cpu.sh"

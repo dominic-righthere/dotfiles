@@ -127,6 +127,15 @@ a zen row. Toggling runs `plugins/control_center.sh` which flips state then `ske
 (rc re-adds/skips per the new state). **Zen mode** (`⌥⇧Z` or the popup row) hides all but the
 essentials (`workspaces`, `clock`, `control_center`).
 
+> **Reload caveat:** `sketchybar --reload` re-runs the rc but **does not reset existing items'
+> properties** — the `--default` block only applies to items added *after* it, so an item that
+> already exists keeps whatever it had. This is fine for module toggles (defaults unchanged) and
+> for login (AeroSpace launches a fresh process). But if you **change a `--default`** (font, color,
+> padding) and only `--reload`, older items keep the old value while newly-added ones get the new
+> one → a mismatch. After editing defaults, do a clean restart:
+> `pkill -x sketchybar; nohup sketchybar >/dev/null 2>&1 & disown`. (Same reason renamed/removed
+> items orphan on `--reload`.)
+
 **Modules & performance** (how they're loaded):
 
 | Module | Trigger | Cost | Default |

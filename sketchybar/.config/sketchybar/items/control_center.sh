@@ -4,6 +4,7 @@
 sketchybar --add item control_center right \
            --set control_center \
                  icon="󰒓" icon.color=$IRIS label.drawing=off \
+                 padding_left=8 \
                  background.color=$OVERLAY background.drawing=on \
                  background.height=26 background.corner_radius=10 \
                  popup.align=right popup.y_offset=6 \
