@@ -25,7 +25,7 @@ done
 # Leading robot anchor + poll driver (manages the dots above).
 sketchybar --add item claude right \
            --set claude \
-                 update_freq=2 \
+                 update_freq=1 \
                  icon="󰚩" icon.color=$FOAM icon.padding_right=2 \
                  label.drawing=off drawing=off \
                  script="$PLUGIN_DIR/claude.sh"

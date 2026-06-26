@@ -143,9 +143,13 @@ essentials (`workspaces`, `clock`, `control_center`).
 | control_center | events only | ~0 idle | on (essential) |
 
 **Claude indicator** (`claude` module, in the `monitoring` island) — **per-session**: a leading `󰚩`
-robot anchor (identity; gently pulses foam, or amber if anything's waiting) followed by **one `●` dot
-per ACTIVE session** (foam = working, gold = waiting; idle excluded) — so the dot count = how many are
-active at a glance. **Hover a dot** → popup with that session's name · tmux window · message.
+robot anchor (steady identity — foam, or amber if anything's waiting) followed by **one `●` dot per
+ACTIVE session** (foam = working, gold = waiting; idle excluded) that gently **breathes** (blinks
+between full and ~50% alpha each tick) — so the dot count = how many are active at a glance.
+**Hover a dot** → popup with that session's name · tmux window · message. (Note: animating `icon.color`
+via `--animate` doesn't apply to these items here — and a *batched* `--animate … --set a --set b`
+silently no-ops — so the breathe is a plain phase-alternated set; per-item `--animate` for one `--set`
+does work elsewhere, e.g. the workspace focus highlight.)
 - Reads the **external** tmux-agent-notifier state (`~/.local/share/agent-notifier/{active,notifications}`,
   written by Claude Code hooks). No notifier → dirs absent → everything stays hidden (safe/portable).
 - Architecture: `items/claude.sh` creates the anchor + a fixed pool of 12 `claudesess.N` dot slots
