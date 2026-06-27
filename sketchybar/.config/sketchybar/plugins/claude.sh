@@ -14,9 +14,12 @@ PHASE_FILE="${XDG_CACHE_HOME:-$HOME/.cache}/sketchybar/claude.phase"
 SLOTS=12
 NOW=$(date +%s)
 
-# Collect entries as "state|key|session" — waiting first (so they take the low slots).
-entries=()
-collect() {  # <dir> <type> <max_age>
+# Gather candidates from both state dirs as "ts|state|key|session". One session
+# can appear in BOTH dirs at once — a waiting/finished notification is written
+# without clearing the active "working" record (same filename key in each) — so
+# we must dedupe by key, else one session renders as two dots (foam + gold).
+cands=()
+gather() {  # <dir> <type> <max_age>
   local dir="$1" want="$2" max="$3" f type ts sess k v
   [ -d "$dir" ] || return
   for f in "$dir"/*; do
@@ -27,11 +30,36 @@ collect() {  # <dir> <type> <max_age>
     done < "$f"
     [ "$type" = "$want" ] || continue
     [ $((NOW - ${ts:-0})) -lt "$max" ] || continue
-    entries+=( "$want|${f##*/}|$sess" )
+    cands+=( "${ts:-0}|$want|${f##*/}|$sess" )
   done
 }
-collect "$NOTIF_DIR"  waiting 86400
-collect "$ACTIVE_DIR" working 3600
+gather "$NOTIF_DIR"  waiting 86400   # gathered first → wins timestamp ties
+gather "$ACTIVE_DIR" working 3600
+
+# Dedupe by key, keeping the NEWEST timestamp per session: a fresh waiting
+# notification supersedes the stale working record (→ the dot turns gold in
+# place); a session that resumed work supersedes a stale notification (→ foam).
+ukeys=""
+for c in "${cands[@]}"; do
+  IFS='|' read -r ts state key sess <<< "$c"
+  case " $ukeys " in *" $key "*) : ;; *) ukeys="$ukeys $key" ;; esac
+done
+entries=()
+for key in $ukeys; do
+  best_ts=-1; best_state=""; best_sess=""
+  for c in "${cands[@]}"; do
+    IFS='|' read -r ts state k sess <<< "$c"
+    [ "$k" = "$key" ] || continue
+    if [ "${ts:-0}" -gt "$best_ts" ]; then best_ts=$ts; best_state=$state; best_sess=$sess; fi
+  done
+  entries+=( "$best_state|$key|$best_sess" )
+done
+
+# Order waiting first so they take the low (leftmost) slots.
+ordered=()
+for e in "${entries[@]}"; do [ "${e%%|*}" = "waiting" ] && ordered+=( "$e" ); done
+for e in "${entries[@]}"; do [ "${e%%|*}" = "working" ] && ordered+=( "$e" ); done
+entries=( "${ordered[@]}" )
 count=${#entries[@]}
 
 # slot -> session map for the hover handler

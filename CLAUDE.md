@@ -163,9 +163,12 @@ does work elsewhere, e.g. the workspace focus highlight.)
   written by Claude Code hooks). No notifier → dirs absent → everything stays hidden (safe/portable).
 - Architecture: `items/claude.sh` creates the anchor + a fixed pool of 12 `claudesess.N` dot slots
   (capped, with a `+N` overflow on the last slot). The anchor's `plugins/claude.sh` driver (poll 2s)
-  orders sessions (waiting first), writes a slot→session map to `~/.cache/sketchybar/claude.slots`,
-  pulses the anchor, and batches the dot updates. Each dot's `plugins/claude_session.sh` reads that map
-  on hover to build its popup. Detail (counts/navigation) still lives on the tmux side.
+  **dedupes by filename key** (the *same* session appears in BOTH dirs at once — a waiting/finished
+  notification is written without clearing the active "working" record — so it keeps the newest
+  timestamp per key, else one session would render as two dots), orders sessions (waiting first),
+  writes a slot→session map to `~/.cache/sketchybar/claude.slots`, pulses the anchor, and batches the
+  dot updates. Each dot's `plugins/claude_session.sh` reads that map on hover to build its popup.
+  Detail (counts/navigation) still lives on the tmux side.
 
 **Multi-display**: when >1 monitor is connected, the workspace pills group by display — a subtle
 `󰍹` glyph + a thin divider lead each monitor's group (e.g. `󰍹 1 2 3 q w e │ 󰍹 a s d`). Single
