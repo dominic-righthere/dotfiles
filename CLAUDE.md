@@ -82,7 +82,8 @@ Managed packages:
 - `vim/.vimrc` - Vim configuration with vim-plug and CoC
 - `aerospace/.config/aerospace/aerospace.toml` - AeroSpace tiling WM (macOS)
 - `borders/.config/borders/bordersrc` - JankyBorders active-window highlight (macOS). Launched by AeroSpace's `after-startup-command`; Rose Pine iris border, no shortcuts (focus-watching daemon)
-- `sketchybar/.config/sketchybar/` - SketchyBar status bar (macOS). Rose Pine Moon theme; flush black bar + island components. **Modular** — each feature is a toggleable module. Launched by AeroSpace; requires Hack Nerd Font + `jq`. See "SketchyBar module system" below.
+- `sketchybar/.config/sketchybar/` - SketchyBar status bar (macOS). Rose Pine Moon theme; flush black bar + island components. **Modular** — each feature is a toggleable module. Launched by AeroSpace (`after-startup-command`); requires Hack Nerd Font + `jq`. See "SketchyBar module system" below.
+  - **Single launcher only.** AeroSpace is the *sole* launcher — do **not** also `brew services start sketchybar` (it installs a KeepAlive LaunchAgent `~/Library/LaunchAgents/homebrew.mxcl.sketchybar.plist`). Two launchers = two processes fighting over the bar's Mach socket → one hangs, the bar doesn't render, and `sketchybar --query` returns empty even though `pgrep` shows it "running". Fix: remove the LaunchAgent (`launchctl bootout gui/$(id -u)/homebrew.mxcl.sketchybar` + delete the plist), `pkill -9 -x sketchybar`, then relaunch (relogin, or `nohup sketchybar >/dev/null 2>&1 &`). A KeepAlive LaunchAgent also fights manual `pkill`/`nohup` restarts during dev (it respawns instantly), so kill it first.
   - Bar layout: `[layout][workspaces] … [lyrics] · monitoring[cpu 󰚩 ● ● ●] · system[input audio battery clock] · [⚙ control center]`. Two right-hand islands: **monitoring** (`MONITORING_ITEMS` in `sketchybarrc`: cpu + the per-session Claude dots) and **system** (`SYSTEM_ITEMS`).
 
 ### AeroSpace Layout Management
